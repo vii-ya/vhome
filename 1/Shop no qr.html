@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Scope Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:'Inter','Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,BlinkMacSystemFont,sans-serif;
+      background:#f0ebff;min-height:100vh;padding:16px;color:#1e1a2f;
+    }
+    button{font-family:inherit}
+    .scope{
+      background:#f6f3ff;
+      background-image:radial-gradient(circle at 10% 20%,rgba(255,200,240,.6) 0%,transparent 35%),
+        radial-gradient(circle at 90% 70%,rgba(170,220,255,.7) 0%,transparent 40%),
+        linear-gradient(135deg,#f9f0ff 0%,#e2e9ff 100%);
+      border-radius:22px;padding:20px 20px 50px;min-height:calc(100vh - 32px);
+      max-width:1400px;margin:0 auto;box-shadow:0 30px 60px -20px rgba(80,0,180,.3);
+    }
+    .container{max-width:1280px;margin:0 auto}
+
+    /* header */
+    .header{
+      margin-bottom:22px;padding:22px 28px;background:rgba(255,255,255,.65);
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:50px 50px 36px 36px;
+      box-shadow:0 15px 35px -10px rgba(128,0,255,.2),0 0 0 1px rgba(255,255,255,.7) inset;
+      display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-icon{font-size:2.4rem;filter:drop-shadow(0 6px 10px rgba(162,0,255,.3))}
+    .brand h1{
+      font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;letter-spacing:-.02em;line-height:1.1;
+      background:linear-gradient(120deg,#8b2fc9,#3f6eff,#b02bac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .brand p{font-size:.9rem;font-weight:500;color:#4a3f6b}
+    .header-right{display:flex;align-items:center;gap:10px;flex:1 1 420px;justify-content:flex-end;flex-wrap:wrap}
+    .search-wrapper{position:relative;flex:1 1 200px;max-width:320px;min-width:160px}
+    .search-wrapper input{
+      width:100%;padding:14px 20px 14px 48px;border-radius:60px;border:2px solid rgba(255,255,255,.8);
+      background:rgba(255,255,255,.9);font-size:1rem;color:#1e1a2f;outline:none;transition:.2s;
+      box-shadow:0 6px 18px rgba(135,80,255,.1);font-family:inherit;
+    }
+    .search-wrapper input:focus{border-color:#b280ff;box-shadow:0 0 0 5px rgba(162,0,255,.15)}
+    .search-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);opacity:.7}
+
+    .lang-switch{display:flex;background:rgba(255,255,255,.9);border-radius:40px;padding:4px;box-shadow:0 6px 16px rgba(128,0,255,.15)}
+    .lang-switch button{
+      border:none;background:transparent;padding:9px 14px;border-radius:30px;font-weight:700;font-size:.85rem;
+      color:#6b5b8a;cursor:pointer;transition:.15s;
+    }
+    .lang-switch button.active{background:linear-gradient(115deg,#8f4eff,#c34aff);color:#fff;box-shadow:0 4px 10px rgba(147,51,234,.4)}
+
+    .pill-btn{
+      background:rgba(255,255,255,.95);border-radius:40px;padding:11px 18px;display:flex;align-items:center;gap:8px;
+      cursor:pointer;font-size:1rem;font-weight:600;color:#2d1b4e;border:1px solid rgba(255,255,255,.9);
+      box-shadow:0 10px 22px -8px rgba(128,0,255,.45);transition:.2s;
+    }
+    .pill-btn:hover{transform:translateY(-2px) scale(1.03);background:#fff}
+    .cart-badge{
+      background:#ff3b7f;color:#fff;border-radius:30px;min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+      font-size:.8rem;font-weight:700;padding:0 7px;transition:transform .15s;
+    }
+    .admin-on{background:linear-gradient(115deg,#8f4eff,#c34aff);color:#fff}
+
+    /* toolbar */
+    .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{
+      border:none;background:rgba(255,255,255,.85);color:#5b4a7a;padding:9px 16px;border-radius:30px;font-weight:600;font-size:.88rem;
+      cursor:pointer;transition:.15s;box-shadow:0 4px 10px rgba(128,0,255,.08);
+    }
+    .chip.active{background:linear-gradient(115deg,#8f4eff,#c34aff);color:#fff}
+    .sort{padding:10px 16px;border-radius:30px;border:2px solid #fff;background:rgba(255,255,255,.9);color:#4a3f6b;font-weight:600;font-size:.88rem;outline:none;font-family:inherit}
+
+    /* products */
+    .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px}
+    .card{
+      background:rgba(255,255,255,.8);border-radius:30px;overflow:hidden;display:flex;flex-direction:column;position:relative;
+      box-shadow:0 20px 35px -12px rgba(96,0,255,.2),0 0 0 1px rgba(255,255,255,.8) inset;transition:.25s cubic-bezier(.2,.9,.3,1);
+      border:1px solid rgba(255,255,255,.9);
+    }
+    .card:hover{transform:translateY(-6px);box-shadow:0 28px 40px -12px rgba(128,0,255,.35)}
+    .card.soldout .img{filter:grayscale(.8);opacity:.7}
+    .img{width:100%;height:180px;object-fit:cover;display:block;background:linear-gradient(145deg,#f2e9ff,#dfd4ff)}
+    .tag{
+      position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);color:#7e3ed6;font-size:.72rem;font-weight:700;
+      padding:5px 11px;border-radius:20px;
+    }
+    .stock-tag{position:absolute;top:12px;right:12px;font-size:.72rem;font-weight:700;padding:5px 11px;border-radius:20px;background:#ff3b7f;color:#fff}
+    .stock-tag.low{background:#ff9f1c}
+    .edit-fab{
+      position:absolute;top:52px;right:12px;width:34px;height:34px;border-radius:50%;border:none;background:#fff;cursor:pointer;
+      box-shadow:0 4px 12px rgba(0,0,0,.2);font-size:1rem;
+    }
+    .info{padding:18px 18px 20px;flex:1;display:flex;flex-direction:column}
+    .info h3{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-size:1.2rem;font-weight:600;margin-bottom:6px}
+    .info p{color:#6e5e8a;font-size:.86rem;line-height:1.45;margin-bottom:12px;flex:1}
+    .price{
+      font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:14px;
+      background:linear-gradient(135deg,#7d3aff,#bd3bff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .btn{
+      border:none;color:#fff;padding:13px 18px;border-radius:40px;font-size:.95rem;font-weight:600;cursor:pointer;transition:.2s;
+      background:linear-gradient(115deg,#8f4eff,#c34aff);box-shadow:0 8px 18px -6px rgba(147,51,234,.5);
+      display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;
+    }
+    .btn:hover:not(:disabled){transform:scale(1.02);box-shadow:0 12px 22px -6px rgba(147,51,234,.7)}
+    .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+    .btn.light{background:#f0eaff;color:#4a2d7a;box-shadow:none}
+    .btn.light:hover:not(:disabled){background:#e4d9ff;box-shadow:none}
+    .btn.wa{background:#25D366;box-shadow:0 8px 20px -6px rgba(37,211,102,.6)}
+    .btn.danger{background:#ffe3ec;color:#d11d5a;box-shadow:none}
+    .btn.small{padding:8px 14px;font-size:.82rem}
+    .btn.full{width:100%}
+    .empty-state{
+      grid-column:1/-1;text-align:center;padding:60px 20px;background:rgba(255,255,255,.6);border-radius:40px;color:#6d5a91;font-size:1.1rem;font-weight:500;
+    }
+
+    /* modal */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(20,5,40,.5);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:16px}
+    .overlay.active{display:flex}
+    .modal{
+      background:rgba(255,255,255,.98);border-radius:32px;max-width:520px;width:100%;max-height:92vh;overflow-y:auto;padding:28px 24px;
+      box-shadow:0 40px 70px -15px rgba(80,0,180,.4);
+    }
+    .modal.wide{max-width:760px}
+    .modal h2{
+      font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-size:1.7rem;font-weight:700;margin-bottom:18px;
+      background:linear-gradient(135deg,#5b2b9e,#b23bdf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .row>*{flex:1}
+    .actions{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+    .actions .btn{flex:1}
+    .actions .btn.grow{flex:2}
+
+    .cart-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(150,120,220,.2);gap:10px}
+    .cart-item h4{font-size:1rem;font-weight:600;margin-bottom:4px}
+    .cart-item span{color:#8b5cf6;font-weight:600;font-size:.9rem}
+    .qty{display:flex;align-items:center;gap:8px}
+    .qty button{width:34px;height:34px;border:1.5px solid #d9c9ff;background:#fff;border-radius:12px;cursor:pointer;font-size:1.2rem;color:#6633cc}
+    .qty button:hover{background:#f0e6ff}
+    .qty b{min-width:24px;text-align:center}
+    .thumb{width:52px;height:52px;border-radius:14px;object-fit:cover;flex-shrink:0;background:#eee}
+    .grow-info{flex:1;min-width:0}
+
+    .box{background:#f7f3ff;border-radius:22px;padding:14px 18px;margin-bottom:16px;border:1px solid #e4d9ff}
+    .line{display:flex;justify-content:space-between;font-size:.92rem;padding:4px 0;color:#4a3f6b;gap:10px}
+    .line.total{font-weight:700;font-size:1.15rem;color:#2a1e44;border-top:2px dashed #d6c6ff;margin-top:8px;padding-top:10px}
+
+    .fg{margin-bottom:16px}
+    .fg label{display:block;font-size:.85rem;font-weight:600;color:#5b4a7a;margin-bottom:6px}
+    .fg small{display:block;color:#9a8bb5;font-size:.75rem;margin-top:4px;font-weight:400}
+    .fg input,.fg textarea,.fg select{
+      width:100%;padding:13px 16px;border-radius:20px;border:2px solid #e4d9ff;background:#fff;font-size:.95rem;font-family:inherit;color:#1e1a2f;outline:none;transition:.2s;
+    }
+    .fg textarea{resize:vertical}
+    .fg input:focus,.fg textarea:focus,.fg select:focus{border-color:#b280ff;box-shadow:0 0 0 4px rgba(162,0,255,.12)}
+    .fg .err{border-color:#ff3b7f}
+    .ferr{color:#ff3b7f;font-size:.8rem;margin-top:4px;display:none}
+    .ferr.show{display:block}
+    .lang-tag{display:inline-block;background:#f0eaff;color:#7e3ed6;border-radius:8px;font-size:.7rem;font-weight:700;padding:2px 7px;margin-right:6px}
+
+    .seg{display:flex;gap:8px}
+    .seg label{flex:1;margin:0;cursor:pointer}
+    .seg input{display:none}
+    .seg span{display:block;text-align:center;padding:12px;border-radius:20px;border:2px solid #e4d9ff;font-weight:600;color:#5b4a7a}
+    .seg input:checked+span{border-color:#8f4eff;background:#f3edff;color:#6a2ed0}
+
+    .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+    .tabs button{border:none;background:#f0eaff;color:#5b4a7a;padding:10px 18px;border-radius:30px;font-weight:700;cursor:pointer}
+    .tabs button.active{background:linear-gradient(115deg,#8f4eff,#c34aff);color:#fff}
+
+    .admin-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(150,120,220,.18)}
+    .admin-row .meta{flex:1;min-width:0}
+    .admin-row .meta b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .admin-row .meta small{color:#8b7aa8}
+    .order-card{background:#f7f3ff;border:1px solid #e4d9ff;border-radius:22px;padding:14px 16px;margin-bottom:12px;font-size:.9rem}
+    .order-card .head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+    .order-card select{padding:6px 10px;border-radius:12px;border:1.5px solid #d9c9ff;font-weight:600;font-family:inherit}
+    .photo-prev{display:flex;align-items:center;gap:14px}
+    .photo-prev img{width:96px;height:96px;border-radius:20px;object-fit:cover;background:#f0eaff;border:2px dashed #d6c6ff}
+    .qr-img{width:220px;height:220px;object-fit:contain;display:block;margin:12px auto;border-radius:22px;border:6px solid #e3d5ff;background:#fff}
+    .center{text-align:center}
+    .notice{background:#fff7e0;color:#8a5a00;border-radius:18px;padding:10px 14px;font-size:.85rem;margin-bottom:14px;font-weight:500}
+    .ref{display:inline-block;background:#f3edff;color:#7e3ed6;font-weight:700;font-size:1.1rem;padding:10px 18px;border-radius:20px;letter-spacing:1px;margin:6px 0 14px}
+    .toast{
+      position:fixed;bottom:24px;left:50%;transform:translate(-50%,30px);background:#2a1e44;color:#fff;padding:12px 22px;border-radius:30px;
+      font-weight:600;font-size:.9rem;opacity:0;pointer-events:none;transition:.25s;z-index:400;
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    pre.bank{white-space:pre-wrap;font-family:inherit;font-size:.92rem;color:#2a1e44;text-align:left}
+    footer{text-align:center;color:#8b7aa8;font-size:.8rem;margin-top:34px}
+
+    @media(max-width:640px){
+      .scope{padding:14px 14px 40px}
+      .header{padding:18px;border-radius:34px}
+      .brand h1{font-size:1.6rem}
+      .products{grid-template-columns:1fr 1fr;gap:14px}
+      .img{height:130px}
+      .info{padding:12px}
+      .info h3{font-size:1rem}
+      .price{font-size:1.2rem}
+      .header-right{flex:1 1 100%;justify-content:space-between}
+      .search-wrapper{max-width:100%;flex:1 1 100%}
+      .modal{padding:22px 16px}
+    }
+    @media(max-width:400px){.products{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="scope">
+    <div class="container">
+      <header class="header">
+        <div class="brand">
+          <div class="brand-icon">🌀</div>
+          <div>
+            <h1 id="shopTitle">Vibe Scope</h1>
+            <p data-i18n="brandSub"></p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" autocomplete="off">
+          </div>
+          <div class="lang-switch" id="langSwitch"></div>
+          <button class="pill-btn" id="adminBtn" title="Admin">⚙️</button>
+          <button class="pill-btn" id="cartBtn">🛒 <span data-i18n="cart"></span><span class="cart-badge" id="cartBadge">0</span></button>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <div class="chips" id="chips"></div>
+        <select class="sort" id="sortSel"></select>
+      </div>
+
+      <div class="products" id="productsGrid"></div>
+      <footer id="footer"></footer>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+  <div class="toast" id="toast"></div>
+  <input type="file" id="hiddenImport" accept="application/json" style="display:none">
+
+<script>
+(function(){
+  'use strict';
+
+  /* ================= i18n : [中文, English, Bahasa Melayu] ================= */
+  const LANGS = ['zh','en','ms'];
+  const LABEL = {zh:'中文', en:'EN', ms:'BM'};
+  const T = {
+    brandSub:['精选好物','Curated Goods','Barangan Pilihan'],
+    search:['搜索产品…','Search products…','Cari produk…'],
+    cart:['购物车','Cart','Troli'],
+    add:['加入购物车','Add to Cart','Tambah ke Troli'],
+    added:['已加入购物车','Added to cart','Ditambah ke troli'],
+    soldOut:['已售罄','Sold out','Habis dijual'],
+    left:['仅剩 {n} 件','Only {n} left','Tinggal {n}'],
+    all:['全部','All','Semua'],
+    sortNew:['最新上架','Newest','Terbaru'],
+    sortLow:['价格：低到高','Price: low to high','Harga: rendah ke tinggi'],
+    sortHigh:['价格：高到低','Price: high to low','Harga: tinggi ke rendah'],
+    noResult:['没有找到匹配的产品','No products found','Tiada produk dijumpai'],
+    noProducts:['还没有产品，点右上角 ⚙️ 添加','No products yet — tap ⚙️ to add some','Belum ada produk — tekan ⚙️ untuk tambah'],
+    emptyCart:['购物车是空的','Your cart is empty','Troli anda kosong'],
+    yourCart:['你的购物车','Your Cart','Troli Anda'],
+    continue:['继续购物','Continue shopping','Teruskan membeli-belah'],
+    checkout:['去结算','Checkout','Bayar'],
+    subtotal:['小计','Subtotal','Jumlah kecil'],
+    deliveryFee:['运费','Delivery fee','Caj penghantaran'],
+    free:['免运费','Free','Percuma'],
+    total:['总计','Total','Jumlah'],
+    yourDetails:['填写订单信息','Your details','Maklumat anda'],
+    name:['姓名','Full name','Nama penuh'],
+    phone:['手机号码','Phone number','Nombor telefon'],
+    address:['收货地址','Delivery address','Alamat penghantaran'],
+    notes:['备注（可选）','Notes (optional)','Nota (pilihan)'],
+    method:['取货方式','Delivery method','Kaedah penerimaan'],
+    ship:['送货上门','Delivery','Penghantaran'],
+    pickup:['到店自取','Self pickup','Ambil sendiri'],
+    back:['返回','Back','Kembali'],
+    placeOrder:['提交订单','Place order','Hantar pesanan'],
+    required:['请填写此项','This field is required','Medan ini diperlukan'],
+    badPhone:['请输入有效的手机号','Enter a valid phone number','Masukkan nombor telefon yang sah'],
+    orderPlaced:['订单已提交！','Order placed!','Pesanan diterima!'],
+    orderRef:['订单号','Order ref','No. pesanan'],
+    payInstr:['请按下方方式付款，然后通过 WhatsApp 发送订单和付款截图给商家。','Please pay using the details below, then send your order and payment screenshot to the seller on WhatsApp.','Sila bayar menggunakan butiran di bawah, kemudian hantar pesanan dan tangkapan skrin bayaran kepada penjual melalui WhatsApp.'],
+    scanToPay:['扫码支付','Scan to pay','Imbas untuk bayar'],
+    bank:['银行转账','Bank transfer','Pindahan bank'],
+    noPayInfo:['商家尚未设置付款方式，请通过 WhatsApp 联系商家。','The seller hasn’t set up payment details yet — please contact them on WhatsApp.','Penjual belum menetapkan butiran bayaran — sila hubungi melalui WhatsApp.'],
+    sendWA:['通过 WhatsApp 发送订单','Send order via WhatsApp','Hantar pesanan melalui WhatsApp'],
+    noWA:['商家尚未设置 WhatsApp 号码','The seller hasn’t set a WhatsApp number yet','Penjual belum menetapkan nombor WhatsApp'],
+    done:['完成','Done','Selesai'],
+    stockShort:['「{name}」库存不足，仅剩 {n} 件','Not enough stock for “{name}” — only {n} left','Stok tidak mencukupi untuk “{name}” — tinggal {n}'],
+    admin:['商家管理','Seller admin','Pentadbir kedai'],
+    enterPin:['输入管理密码','Enter admin PIN','Masukkan PIN pentadbir'],
+    pin:['密码','PIN','PIN'],
+    wrongPin:['密码错误','Wrong PIN','PIN salah'],
+    unlock:['解锁','Unlock','Buka kunci'],
+    lock:['退出管理','Lock admin','Kunci pentadbir'],
+    tabProducts:['产品','Products','Produk'],
+    tabOrders:['订单','Orders','Pesanan'],
+    tabSettings:['设置','Settings','Tetapan'],
+    addProduct:['添加产品','Add product','Tambah produk'],
+    editProduct:['编辑产品','Edit product','Edit produk'],
+    photo:['产品图片','Product photo','Gambar produk'],
+    choosePhoto:['选择图片','Choose photo','Pilih gambar'],
+    remove:['移除','Remove','Buang'],
+    price:['价格','Price','Harga'],
+    stock:['库存','Stock','Stok'],
+    stockHint:['留空 = 不限库存','Leave empty = unlimited','Kosongkan = tanpa had'],
+    category:['分类','Category','Kategori'],
+    nameField:['产品名称','Product name','Nama produk'],
+    descField:['产品描述（可选）','Description (optional)','Penerangan (pilihan)'],
+    nameHint:['至少填写一种语言，其他语言会自动使用已填写的名称。','Fill in at least one language — the others fall back to it.','Isi sekurang-kurangnya satu bahasa — bahasa lain akan menggunakannya.'],
+    save:['保存','Save','Simpan'],
+    saveAnother:['保存并继续添加','Save & add another','Simpan & tambah lagi'],
+    cancel:['取消','Cancel','Batal'],
+    del:['删除','Delete','Padam'],
+    edit:['编辑','Edit','Edit'],
+    confirmDelete:['确定删除这个产品？','Delete this product?','Padam produk ini?'],
+    noOrders:['还没有订单','No orders yet','Belum ada pesanan'],
+    st_pending:['待付款','Pending','Menunggu'],
+    st_paid:['已付款','Paid','Dibayar'],
+    st_shipped:['已发货','Shipped','Dihantar'],
+    st_cancelled:['已取消','Cancelled','Dibatalkan'],
+    shopName:['店铺名称','Shop name','Nama kedai'],
+    whatsapp:['商家 WhatsApp 号码','Seller WhatsApp number','Nombor WhatsApp penjual'],
+    waHint:['含国家代码，只填数字，例如 60123456789','Country code included, digits only, e.g. 60123456789','Termasuk kod negara, nombor sahaja, cth 60123456789'],
+    currency:['货币符号','Currency symbol','Simbol mata wang'],
+    delFee:['运费','Delivery fee','Caj penghantaran'],
+    freeOver:['满额免运费（0 = 不启用）','Free delivery over (0 = off)','Penghantaran percuma melebihi (0 = tutup)'],
+    newPin:['修改管理密码（至少 4 位，留空不改）','Change admin PIN (4+ characters, leave empty to keep)','Tukar PIN pentadbir (4+ aksara, kosongkan untuk kekal)'],
+    payQr:['收款二维码（DuitNow / TNG / 支付宝 / 微信）','Payment QR (DuitNow / TNG / Alipay / WeChat)','QR bayaran (DuitNow / TNG / Alipay / WeChat)'],
+    bankInfo:['银行转账信息','Bank transfer details','Butiran pindahan bank'],
+    backup:['备份与恢复','Backup & restore','Sandaran & pulih'],
+    export:['导出数据','Export data','Eksport data'],
+    import:['导入数据','Import data','Import data'],
+    backupHint:['数据保存在这个浏览器里。换设备或清除浏览器数据前，请先导出备份。','Data is stored in this browser. Export a backup before switching devices or clearing browser data.','Data disimpan dalam pelayar ini. Eksport sandaran sebelum tukar peranti atau padam data pelayar.'],
+    saved:['已保存','Saved','Disimpan'],
+    imported:['导入成功','Import successful','Import berjaya'],
+    importFail:['文件格式不正确','Invalid file','Fail tidak sah'],
+    pinWarn:['默认密码是 1234，请到「设置」里尽快修改。','The default PIN is 1234 — please change it in Settings.','PIN lalai ialah 1234 — sila tukar dalam Tetapan.'],
+    pinNote:['此密码只在浏览器里生效，用来防误触，并非真正的安全保护。','This PIN only runs in the browser — it prevents accidents but isn’t real security.','PIN ini hanya berfungsi dalam pelayar — mencegah kesilapan tetapi bukan keselamatan sebenar.'],
+    noWAWarn:['请先在「设置」里填写你的 WhatsApp 号码，否则顾客无法发送订单。','Add your WhatsApp number in Settings, otherwise customers can’t send you their orders.','Tambah nombor WhatsApp anda dalam Tetapan, jika tidak pelanggan tidak boleh hantar pesanan.'],
+    customer:['客户','Customer','Pelanggan'],
+    waTitle:['新订单','New order','Pesanan baru'],
+    waThanks:['谢谢！','Thank you!','Terima kasih!'],
+    items:['商品','Items','Barangan'],
+    pickupNote:['自取','Self pickup','Ambil sendiri'],
+    imgFail:['图片读取失败','Could not read image','Gagal membaca gambar'],
+    saveFail:['保存失败，浏览器存储空间可能已满','Could not save — browser storage may be full','Gagal menyimpan — storan pelayar mungkin penuh'],
+    footer:['商品信息与订单保存在本浏览器','Products and orders are stored in this browser','Produk dan pesanan disimpan dalam pelayar ini'],
+    qrOptional:['建议上传，顾客付款时会看到','Recommended — customers see it when paying','Disyorkan — pelanggan akan lihat semasa bayar']
+  };
+
+  /* ================= storage ================= */
+  const K = {products:'vs8_products', settings:'vs8_settings', cart:'vs8_cart', orders:'vs8_orders', lang:'vs8_lang'};
+  function load(key, def){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; }catch(e){ return def; } }
+  function save(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); return true; }catch(e){ toast(t('saveFail')); return false; } }
+
+  /* ================= state ================= */
+  const seed = [
+    {id:1, emoji:'🌌', price:189, stock:null, category:'Lighting',
+      names:{zh:'极光投影灯', en:'Aurora Lamp', ms:'Lampu Aurora'},
+      descs:{zh:'梦幻北极光氛围，触控调色', en:'Dreamy aurora ambiance, touch control', ms:'Suasana aurora yang indah, kawalan sentuh'}},
+    {id:2, emoji:'☁️', price:159, stock:null, category:'Home',
+      names:{zh:'云朵加湿器', en:'Cloud Humidifier', ms:'Pelembap Awan'},
+      descs:{zh:'静音大雾量，七彩夜灯', en:'Quiet mist, colorful night light', ms:'Kabus senyap, lampu malam berwarna'}},
+    {id:3, emoji:'🌟', price:229, stock:null, category:'Home',
+      names:{zh:'星空香薰机', en:'Starry Diffuser', ms:'Penyebar Aroma Bintang'},
+      descs:{zh:'超声波精油扩散，星空投影', en:'Ultrasonic diffuser, star projector', ms:'Penyebar ultrasonik, projektor bintang'}},
+    {id:4, emoji:'🛏️', price:399, stock:null, category:'Home',
+      names:{zh:'重力毯', en:'Weighted Blanket', ms:'Selimut Berat'},
+      descs:{zh:'深层压力触感，改善睡眠', en:'Deep pressure touch, better sleep', ms:'Tekanan mendalam, tidur lebih lena'}},
+    {id:5, emoji:'🐱', price:129, stock:null, category:'Lighting',
+      names:{zh:'猫咪氛围灯', en:'Cat Lamp', ms:'Lampu Kucing'},
+      descs:{zh:'硅胶触控，三档色温', en:'Silicone touch, 3 color temps', ms:'Silikon sentuh, 3 suhu warna'}},
+    {id:6, emoji:'🔊', price:279, stock:null, category:'Gadgets',
+      names:{zh:'便携蓝牙音箱', en:'Bluetooth Speaker', ms:'Pembesar Suara Bluetooth'},
+      descs:{zh:'360°环绕音，IPX7防水', en:'360° sound, IPX7 waterproof', ms:'Bunyi 360°, kalis air IPX7'}}
+  ];
+  const defaultSettings = {shopName:'Vibe Scope', whatsapp:'', currency:'RM', deliveryFee:8, freeOver:200, pin:'1234', qr:'', bank:''};
+
+  let products = load(K.products, null) || seed;
+  let settings = Object.assign({}, defaultSettings, load(K.settings, {}));
+  let cart = load(K.cart, []);
+  let orders = load(K.orders, []);
+  let lang = load(K.lang, null);
+  if(!LANGS.includes(lang)){
+    const nl = (navigator.language || 'en').toLowerCase();
+    lang = nl.startsWith('zh') ? 'zh' : nl.startsWith('ms') ? 'ms' : 'en';
+  }
+  let admin = sessionStorage.getItem('vs8_admin') === '1';
+  let category = '__all', sort = 'new', query = '';
+  let renderModal = null;      // current modal view renderer
+  let adminTab = 'products';
+  let formImage = '';          // product form image (data URL)
+  let settingsQr = null;       // pending QR (null = unchanged)
+
+  if(!localStorage.getItem(K.products)) save(K.products, products);
+
+  /* ================= helpers ================= */
+  const $ = id => document.getElementById(id);
+  const li = () => LANGS.indexOf(lang);
+  function t(key, vars){
+    const e = T[key]; let s = e ? (e[li()] || e[1]) : key;
+    if(vars) Object.keys(vars).forEach(k => { s = s.split('{'+k+'}').join(vars[k]); });
+    return s;
+  }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function money(n){ return esc(settings.currency) + ' ' + Number(n).toFixed(2); }
+  function pText(obj){ return (obj && (obj[lang] || obj.en || obj.zh || obj.ms)) || ''; }
+  function getP(id){ return products.find(p => p.id === id); }
+  function toast(msg){
+    const el = $('toast'); el.textContent = msg; el.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove('show'), 1800);
+  }
+  function placeholder(p){
+    const hues = [270,210,300,330,240,190];
+    const h = hues[p.id % hues.length];
+    const ch = p.emoji || (pText(p.names).trim().charAt(0).toUpperCase() || '✨');
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='hsl(${h},90%,88%)'/><stop offset='1' stop-color='hsl(${h+30},85%,75%)'/></linearGradient></defs><rect width='400' height='300' fill='url(#g)'/><text x='200' y='175' font-size='96' text-anchor='middle' font-family='sans-serif' fill='white'>${ch}</text></svg>`;
+    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+  function imgOf(p){ return p.image || placeholder(p); }
+  function resizeImage(file, max, cb){
+    const fr = new FileReader();
+    fr.onerror = () => toast(t('imgFail'));
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = () => toast(t('imgFail'));
+      img.onload = () => {
+        const r = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height);
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        cb(c.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  }
+  function cartLines(){
+    return cart.map(i => ({p:getP(i.id), qty:i.qty})).filter(x => x.p);
+  }
+  function subtotal(){ return cartLines().reduce((s,x) => s + x.p.price * x.qty, 0); }
+  function feeFor(sub, method){
+    if(method === 'pickup') return 0;
+    if(settings.freeOver > 0 && sub >= settings.freeOver) return 0;
+    return Number(settings.deliveryFee) || 0;
+  }
+  function stockLeft(p){ return p.stock == null ? Infinity : p.stock; }
+  function cleanCart(){
+    cart = cart.filter(i => getP(i.id)).map(i => {
+      const p = getP(i.id); const max = stockLeft(p);
+      return {id:i.id, qty:Math.min(i.qty, max)};
+    }).filter(i => i.qty > 0);
+  }
+
+  /* ================= static text / header ================= */
+  function applyStatic(){
+    document.documentElement.lang = lang === 'zh' ? 'zh' : lang === 'ms' ? 'ms' : 'en';
+    document.title = settings.shopName + ' · Shop';
+    $('shopTitle').textContent = settings.shopName;
+    document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+    $('searchInput').placeholder = t('search');
+    $('langSwitch').innerHTML = LANGS.map(l => `<button data-lang="${l}" class="${l===lang?'active':''}">${LABEL[l]}</button>`).join('');
+    $('sortSel').innerHTML = [['new','sortNew'],['low','sortLow'],['high','sortHigh']]
+      .map(([v,k]) => `<option value="${v}" ${sort===v?'selected':''}>${t(k)}</option>`).join('');
+    $('adminBtn').classList.toggle('admin-on', admin);
+    $('footer').textContent = t('footer');
+    updateBadge();
+  }
+  function updateBadge(){
+    const n = cart.reduce((s,i) => s + i.qty, 0);
+    const b = $('cartBadge'); b.textContent = n;
+    b.style.transform = 'scale(1.25)'; setTimeout(() => b.style.transform = 'scale(1)', 150);
+  }
+
+  /* ================= storefront ================= */
+  function categories(){
+    return [...new Set(products.map(p => (p.category || '').trim()).filter(Boolean))];
+  }
+  function renderChips(){
+    const cats = categories();
+    if(category !== '__all' && !cats.includes(category)) category = '__all';
+    $('chips').innerHTML = cats.length ? [`<button class="chip ${category==='__all'?'active':''}" data-cat="__all">${t('all')}</button>`]
+      .concat(cats.map(c => `<button class="chip ${category===c?'active':''}" data-cat="${esc(c)}">${esc(c)}</button>`)).join('') : '';
+  }
+  function renderProducts(){
+    renderChips();
+    const q = query.trim().toLowerCase();
+    let list = products.filter(p => {
+      if(category !== '__all' && (p.category || '') !== category) return false;
+      if(!q) return true;
+      const hay = LANGS.map(l => (p.names[l]||'') + ' ' + (p.descs && p.descs[l] || '')).join(' ').toLowerCase() + ' ' + (p.category||'').toLowerCase();
+      return hay.includes(q);
+    });
+    if(sort === 'low') list.sort((a,b) => a.price - b.price);
+    else if(sort === 'high') list.sort((a,b) => b.price - a.price);
+    else list.sort((a,b) => b.id - a.id);
+
+    if(!products.length){ $('productsGrid').innerHTML = `<div class="empty-state">${t('noProducts')}</div>`; return; }
+    if(!list.length){ $('productsGrid').innerHTML = `<div class="empty-state">🔍 ${t('noResult')}</div>`; return; }
+
+    $('productsGrid').innerHTML = list.map(p => {
+      const left = stockLeft(p), out = left <= 0;
+      const badge = out ? `<span class="stock-tag">${t('soldOut')}</span>` : (left <= 5 ? `<span class="stock-tag low">${t('left',{n:left})}</span>` : '');
+      return `<div class="card ${out?'soldout':''}">
+        ${p.category ? `<span class="tag">${esc(p.category)}</span>` : ''}${badge}
+        ${admin ? `<button class="edit-fab" data-edit="${p.id}" title="${t('edit')}">✏️</button>` : ''}
+        <img class="img" src="${imgOf(p)}" alt="${esc(pText(p.names))}" loading="lazy">
+        <div class="info">
+          <h3>${esc(pText(p.names))}</h3>
+          <p>${esc(pText(p.descs))}</p>
+          <div class="price">${money(p.price)}</div>
+          <button class="btn" data-add="${p.id}" ${out?'disabled':''}>${out ? t('soldOut') : '➕ ' + t('add')}</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  function addToCart(id){
+    const p = getP(id); if(!p) return;
+    const ex = cart.find(i => i.id === id); const cur = ex ? ex.qty : 0;
+    if(cur + 1 > stockLeft(p)){ toast(t('stockShort',{name:pText(p.names), n:stockLeft(p)})); return; }
+    if(ex) ex.qty++; else cart.push({id, qty:1});
+    save(K.cart, cart); updateBadge(); toast('✓ ' + t('added'));
+  }
+
+  /* ================= modal plumbing ================= */
+  function openModal(renderer, wide){
+    renderModal = renderer;
+    $('modal').classList.toggle('wide', !!wide);
+    $('overlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    renderer();
+    $('modal').scrollTop = 0;
+  }
+  function closeModal(){
+    $('overlay').classList.remove('active');
+    document.body.style.overflow = '';
+    renderModal = null;
+  }
+  function setModal(html){ $('modal').innerHTML = html; }
+
+  /* ---------- cart view ---------- */
+  function viewCart(){
+    cleanCart(); save(K.cart, cart);
+    const lines = cartLines();
+    let h = `<h2>🛒 ${t('yourCart')}</h2>`;
+    if(!lines.length){
+      h += `<div class="center" style="padding:36px 0;color:#a392c7;font-weight:500">✨ ${t('emptyCart')}</div>
+            <div class="actions"><button class="btn light" data-act="close">${t('continue')}</button></div>`;
+      setModal(h); return;
+    }
+    lines.forEach(({p,qty}) => {
+      h += `<div class="cart-item">
+        <img class="thumb" src="${imgOf(p)}" alt="">
+        <div class="grow-info"><h4>${esc(pText(p.names))}</h4><span>${money(p.price)} × ${qty} = ${money(p.price*qty)}</span></div>
+        <div class="qty"><button data-act="minus" data-id="${p.id}">−</button><b>${qty}</b><button data-act="plus" data-id="${p.id}">+</button></div>
+      </div>`;
+    });
+    h += `<div class="line total" style="margin-top:18px"><span>${t('subtotal')}</span><span>${money(subtotal())}</span></div>
+      <div class="actions">
+        <button class="btn light" data-act="close">${t('continue')}</button>
+        <button class="btn grow" data-act="toCheckout">${t('checkout')}</button>
+      </div>`;
+    setModal(h);
+  }
+  function changeQty(id, d){
+    const it = cart.find(i => i.id === id), p = getP(id); if(!it || !p) return;
+    if(d > 0 && it.qty + d > stockLeft(p)){ toast(t('stockShort',{name:pText(p.names), n:stockLeft(p)})); return; }
+    it.qty += d; if(it.qty <= 0) cart = cart.filter(i => i.id !== id);
+    save(K.cart, cart); updateBadge(); viewCart();
+  }
+
+  /* ---------- checkout view ---------- */
+  let draft = {name:'', phone:'', address:'', notes:'', method:'ship'};
+  function viewCheckout(){
+    cleanCart();
+    if(!cartLines().length){ viewCart(); return; }
+    const sub = subtotal();
+    const summary = () => {
+      const fee = feeFor(sub, draft.method);
+      return cartLines().map(({p,qty}) => `<div class="line"><span>${esc(pText(p.names))} × ${qty}</span><span>${money(p.price*qty)}</span></div>`).join('')
+        + `<div class="line"><span>${t('subtotal')}</span><span>${money(sub)}</span></div>`
+        + `<div class="line"><span>${t('deliveryFee')}</span><span>${fee ? money(fee) : t('free')}</span></div>`
+        + `<div class="line total"><span>${t('total')}</span><span>${money(sub+fee)}</span></div>`;
+    };
+    setModal(`<h2>📋 ${t('yourDetails')}</h2>
+      <div class="box" id="sumBox">${summary()}</div>
+      <form id="checkoutForm" novalidate>
+        <div class="fg"><label>${t('method')}</label>
+          <div class="seg">
+            <label><input type="radio" name="method" value="ship" ${draft.method==='ship'?'checked':''}><span>🚚 ${t('ship')}</span></label>
+            <label><input type="radio" name="method" value="pickup" ${draft.method==='pickup'?'checked':''}><span>🏬 ${t('pickup')}</span></label>
+          </div></div>
+        <div class="fg"><label>${t('name')} *</label><input id="cName" value="${esc(draft.name)}" autocomplete="name"><div class="ferr" id="eName">${t('required')}</div></div>
+        <div class="fg"><label>${t('phone')} *</label><input id="cPhone" type="tel" value="${esc(draft.phone)}" autocomplete="tel"><div class="ferr" id="ePhone">${t('badPhone')}</div></div>
+        <div class="fg" id="addrWrap" style="${draft.method==='pickup'?'display:none':''}"><label>${t('address')} *</label><textarea id="cAddr" rows="3">${esc(draft.address)}</textarea><div class="ferr" id="eAddr">${t('required')}</div></div>
+        <div class="fg"><label>${t('notes')}</label><textarea id="cNotes" rows="2">${esc(draft.notes)}</textarea></div>
+        <div class="actions">
+          <button type="button" class="btn light" data-act="toCart">${t('back')}</button>
+          <button type="submit" class="btn grow">${t('placeOrder')}</button>
+        </div>
+      </form>`);
+    const form = $('checkoutForm');
+    form.addEventListener('change', e => {
+      if(e.target.name === 'method'){
+        draft.method = e.target.value;
+        $('addrWrap').style.display = draft.method === 'pickup' ? 'none' : '';
+        $('sumBox').innerHTML = summary();
+      }
+    });
+    form.addEventListener('submit', e => { e.preventDefault(); submitCheckout(); });
+  }
+  function submitCheckout(){
+    draft.name = $('cName').value.trim(); draft.phone = $('cPhone').value.trim();
+    draft.address = $('cAddr').value.trim(); draft.notes = $('cNotes').value.trim();
+    let ok = true;
+    const flag = (inp, err, bad) => { $(inp).classList.toggle('err', bad); $(err).classList.toggle('show', bad); if(bad) ok = false; };
+    flag('cName','eName', !draft.name);
+    flag('cPhone','ePhone', !/^[0-9+\-\s()]{7,18}$/.test(draft.phone));
+    flag('cAddr','eAddr', draft.method === 'ship' && !draft.address);
+    if(!ok) return;
+
+    // final stock check
+    for(const {p,qty} of cartLines()){
+      if(qty > stockLeft(p)){ toast(t('stockShort',{name:pText(p.names), n:stockLeft(p)})); viewCart(); return; }
+    }
+    const sub = subtotal(), fee = feeFor(sub, draft.method);
+    const order = {
+      ref:'VS' + Date.now().toString(36).toUpperCase().slice(-6) + Math.random().toString(36).slice(2,4).toUpperCase(),
+      date:new Date().toISOString(), status:'pending', restocked:false,
+      customer:{name:draft.name, phone:draft.phone, address:draft.method==='ship'?draft.address:'', notes:draft.notes},
+      method:draft.method, fee, subtotal:sub, total:sub+fee,
+      items:cartLines().map(({p,qty}) => ({id:p.id, names:p.names, price:p.price, qty}))
+    };
+    // deduct stock
+    order.items.forEach(it => { const p = getP(it.id); if(p && p.stock != null) p.stock = Math.max(0, p.stock - it.qty); });
+    orders.unshift(order);
+    cart = []; draft = {name:draft.name, phone:draft.phone, address:draft.address, notes:'', method:draft.method};
+    save(K.products, products); save(K.orders, orders); save(K.cart, cart);
+    updateBadge(); renderProducts();
+    openModal(() => viewDone(order));
+  }
+  function waText(o){
+    const L = [];
+    L.push(`🛍️ *${settings.shopName} — ${t('waTitle')}*`);
+    L.push(`${t('orderRef')}: *${o.ref}*`, '──────────');
+    o.items.forEach(i => L.push(`• ${pText(i.names)} × ${i.qty} = ${settings.currency} ${(i.price*i.qty).toFixed(2)}`));
+    L.push('──────────');
+    L.push(`${t('subtotal')}: ${settings.currency} ${o.subtotal.toFixed(2)}`);
+    L.push(`${t('deliveryFee')}: ${o.fee ? settings.currency + ' ' + o.fee.toFixed(2) : t('free')}`);
+    L.push(`💰 *${t('total')}: ${settings.currency} ${o.total.toFixed(2)}*`, '');
+    L.push(`👤 ${o.customer.name}`, `📱 ${o.customer.phone}`);
+    L.push(o.method === 'pickup' ? `🏬 ${t('pickupNote')}` : `📍 ${o.customer.address}`);
+    if(o.customer.notes) L.push(`📝 ${o.customer.notes}`);
+    L.push('', t('waThanks'));
+    return L.join('\n');
+  }
+  function viewDone(o){
+    const wa = String(settings.whatsapp || '').replace(/\D/g,'');
+    let pay = '';
+    if(settings.qr) pay += `<div class="center"><b>${t('scanToPay')}</b><img class="qr-img" src="${settings.qr}" alt="QR"></div>`;
+    if(settings.bank.trim()) pay += `<div class="box"><b>${t('bank')}</b><pre class="bank">${esc(settings.bank)}</pre></div>`;
+    if(!pay) pay = `<div class="notice">${t('noPayInfo')}</div>`;
+    setModal(`<div class="center"><div style="font-size:3.4rem">🎉</div>
+      <h2 style="margin-top:6px">${t('orderPlaced')}</h2>
+      <div>${t('orderRef')}</div><div class="ref">${esc(o.ref)}</div></div>
+      <div class="box">
+        <div class="line total" style="border:none;margin:0;padding:0"><span>${t('total')}</span><span>${money(o.total)}</span></div>
+      </div>
+      <p style="color:#6b5b8a;font-size:.9rem;line-height:1.5;margin-bottom:14px">${t('payInstr')}</p>
+      ${pay}
+      ${wa ? `<a class="btn wa full" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(waText(o))}">📲 ${t('sendWA')}</a>`
+           : `<div class="notice">${t('noWA')}</div>`}
+      <div class="actions"><button class="btn light" data-act="close">${t('done')}</button></div>`);
+  }
+
+  /* ================= admin ================= */
+  function viewPin(){
+    setModal(`<h2>🔐 ${t('enterPin')}</h2>
+      <form id="pinForm">
+        <div class="fg"><input id="pinIn" type="password" inputmode="numeric" placeholder="${t('pin')}" autocomplete="off"><div class="ferr" id="ePin">${t('wrongPin')}</div></div>
+        <div class="actions"><button type="button" class="btn light" data-act="close">${t('cancel')}</button><button class="btn grow" type="submit">${t('unlock')}</button></div>
+      </form>`);
+    $('pinIn').focus();
+    $('pinForm').addEventListener('submit', e => {
+      e.preventDefault();
+      if($('pinIn').value === String(settings.pin)){
+        admin = true; sessionStorage.setItem('vs8_admin','1');
+        applyStatic(); renderProducts(); adminTab = 'products';
+        renderModal = viewAdmin; viewAdmin();
+      } else { $('pinIn').classList.add('err'); $('ePin').classList.add('show'); }
+    });
+  }
+  function viewAdmin(){
+    renderModal = viewAdmin;
+    $('modal').classList.add('wide');
+    let body = '';
+    if(adminTab === 'products') body = adminProducts();
+    else if(adminTab === 'orders') body = adminOrders();
+    else body = adminSettings();
+    const tabs = [['products','tabProducts'],['orders','tabOrders'],['settings','tabSettings']]
+      .map(([k,l]) => `<button class="${adminTab===k?'active':''}" data-act="tab" data-tab="${k}">${t(l)}${k==='orders'&&orders.filter(o=>o.status==='pending').length?` (${orders.filter(o=>o.status==='pending').length})`:''}</button>`).join('');
+    setModal(`<h2>⚙️ ${t('admin')}</h2>
+      ${settings.pin === '1234' ? `<div class="notice">${t('pinWarn')}</div>` : ''}
+      ${!String(settings.whatsapp).replace(/\D/g,'') ? `<div class="notice">${t('noWAWarn')}</div>` : ''}
+      <div class="tabs">${tabs}</div>${body}
+      <div class="actions"><button class="btn light" data-act="lock">${t('lock')}</button><button class="btn" data-act="close">${t('done')}</button></div>`);
+    if(adminTab === 'settings') bindSettings();
+  }
+  function adminProducts(){
+    let h = `<button class="btn full" data-act="newProduct" style="margin-bottom:10px">➕ ${t('addProduct')}</button>`;
+    if(!products.length) return h + `<div class="center" style="padding:24px;color:#a392c7">${t('noProducts')}</div>`;
+    h += products.slice().sort((a,b) => b.id - a.id).map(p => `
+      <div class="admin-row">
+        <img class="thumb" src="${imgOf(p)}" alt="">
+        <div class="meta"><b>${esc(pText(p.names))}</b><small>${money(p.price)} · ${t('stock')}: ${p.stock == null ? '∞' : p.stock}${p.category ? ' · ' + esc(p.category) : ''}</small></div>
+        <button class="btn light small" data-act="editProduct" data-id="${p.id}">${t('edit')}</button>
+        <button class="btn danger small" data-act="delProduct" data-id="${p.id}">${t('del')}</button>
+      </div>`).join('');
+    return h;
+  }
+  function adminOrders(){
+    if(!orders.length) return `<div class="center" style="padding:30px;color:#a392c7">${t('noOrders')}</div>`;
+    return orders.map(o => `
+      <div class="order-card">
+        <div class="head"><b>${esc(o.ref)}</b>
+          <select data-act="status" data-ref="${esc(o.ref)}">${['pending','paid','shipped','cancelled'].map(s => `<option value="${s}" ${o.status===s?'selected':''}>${t('st_'+s)}</option>`).join('')}</select></div>
+        <div style="color:#8b7aa8;font-size:.8rem;margin-bottom:6px">${new Date(o.date).toLocaleString()}</div>
+        <div>${o.items.map(i => `${esc(pText(i.names))} × ${i.qty}`).join(', ')}</div>
+        <div style="margin-top:6px"><b>${money(o.total)}</b> · ${o.method==='pickup' ? t('pickupNote') : t('ship')}</div>
+        <div style="margin-top:6px;color:#4a3f6b">👤 ${esc(o.customer.name)} · 📱 ${esc(o.customer.phone)}${o.customer.address ? '<br>📍 ' + esc(o.customer.address) : ''}${o.customer.notes ? '<br>📝 ' + esc(o.customer.notes) : ''}</div>
+      </div>`).join('');
+  }
+  function setOrderStatus(ref, status){
+    const o = orders.find(x => x.ref === ref); if(!o) return;
+    if(status === 'cancelled' && !o.restocked){
+      o.items.forEach(i => { const p = getP(i.id); if(p && p.stock != null) p.stock += i.qty; });
+      o.restocked = true;
+    } else if(o.status === 'cancelled' && status !== 'cancelled' && o.restocked){
+      o.items.forEach(i => { const p = getP(i.id); if(p && p.stock != null) p.stock = Math.max(0, p.stock - i.qty); });
+      o.restocked = false;
+    }
+    o.status = status;
+    save(K.orders, orders); save(K.products, products); renderProducts(); viewAdmin();
+  }
+  function adminSettings(){
+    settingsQr = null;
+    return `<form id="setForm" novalidate>
+      <div class="row">
+        <div class="fg"><label>${t('shopName')}</label><input id="sName" value="${esc(settings.shopName)}"></div>
+        <div class="fg"><label>${t('currency')}</label><input id="sCur" value="${esc(settings.currency)}" maxlength="6"></div>
+      </div>
+      <div class="fg"><label>${t('whatsapp')}</label><input id="sWa" type="tel" value="${esc(settings.whatsapp)}" placeholder="60123456789"><small>${t('waHint')}</small></div>
+      <div class="row">
+        <div class="fg"><label>${t('delFee')}</label><input id="sFee" type="number" min="0" step="0.01" value="${settings.deliveryFee}"></div>
+        <div class="fg"><label>${t('freeOver')}</label><input id="sFree" type="number" min="0" step="0.01" value="${settings.freeOver}"></div>
+      </div>
+      <div class="fg"><label>${t('payQr')}</label>
+        <div class="photo-prev"><img id="qrPrev" src="${settings.qr || ''}" alt="" ${settings.qr ? '' : 'style="visibility:hidden"'}>
+          <div><label class="btn light small" style="cursor:pointer">${t('choosePhoto')}<input id="qrFile" type="file" accept="image/*" style="display:none"></label>
+          <button type="button" class="btn danger small" data-act="rmQr">${t('remove')}</button></div></div>
+        <small>${t('qrOptional')}</small></div>
+      <div class="fg"><label>${t('bankInfo')}</label><textarea id="sBank" rows="3" placeholder="Maybank 1234 5678 9012&#10;Vibe Scope Sdn Bhd">${esc(settings.bank)}</textarea></div>
+      <div class="fg"><label>${t('newPin')}</label><input id="sPin" type="password" autocomplete="new-password"><small>${t('pinNote')}</small></div>
+      <button class="btn full" type="submit">${t('save')}</button>
+      <div class="box" style="margin-top:20px"><b>${t('backup')}</b>
+        <p style="font-size:.82rem;color:#6b5b8a;margin:6px 0 12px">${t('backupHint')}</p>
+        <div class="row"><button type="button" class="btn light" data-act="export">⬇️ ${t('export')}</button><button type="button" class="btn light" data-act="import">⬆️ ${t('import')}</button></div>
+      </div>
+    </form>`;
+  }
+  function bindSettings(){
+    $('setForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const pin = $('sPin').value;
+      if(pin && pin.length < 4){ toast(t('wrongPin')); return; }
+      settings.shopName = $('sName').value.trim() || 'Vibe Scope';
+      settings.currency = $('sCur').value.trim() || 'RM';
+      settings.whatsapp = $('sWa').value.replace(/\D/g,'');
+      settings.deliveryFee = Math.max(0, parseFloat($('sFee').value) || 0);
+      settings.freeOver = Math.max(0, parseFloat($('sFree').value) || 0);
+      settings.bank = $('sBank').value;
+      if(pin) settings.pin = pin;
+      if(settingsQr !== null) settings.qr = settingsQr;
+      if(save(K.settings, settings)){ toast('✓ ' + t('saved')); applyStatic(); renderProducts(); viewAdmin(); }
+    });
+  }
+
+  /* ---------- product form ---------- */
+  function viewProductForm(id){
+    const p = id ? getP(id) : null;
+    formImage = p ? (p.image || '') : '';
+    const cats = categories();
+    const nm = l => p ? esc(p.names[l] || '') : '';
+    const ds = l => p ? esc((p.descs && p.descs[l]) || '') : '';
+    renderModal = () => viewProductForm(id);
+    $('modal').classList.add('wide');
+    setModal(`<h2>${p ? '✏️ ' + t('editProduct') : '➕ ' + t('addProduct')}</h2>
+      <form id="pForm" novalidate data-id="${p ? p.id : ''}">
+        <div class="fg"><label>${t('photo')}</label>
+          <div class="photo-prev"><img id="pPrev" src="${formImage || (p ? placeholder(p) : '')}" alt="" ${(!formImage && !p) ? 'style="visibility:hidden"' : ''}>
+          <div><label class="btn light small" style="cursor:pointer">📷 ${t('choosePhoto')}<input id="pFile" type="file" accept="image/*" style="display:none"></label>
+          <button type="button" class="btn danger small" data-act="rmPhoto">${t('remove')}</button></div></div></div>
+        <div class="row">
+          <div class="fg"><label>${t('price')} (${esc(settings.currency)}) *</label><input id="pPrice" type="number" min="0" step="0.01" inputmode="decimal" value="${p ? p.price : ''}"><div class="ferr" id="ePrice">${t('required')}</div></div>
+          <div class="fg"><label>${t('stock')}</label><input id="pStock" type="number" min="0" step="1" inputmode="numeric" value="${p && p.stock != null ? p.stock : ''}"><small>${t('stockHint')}</small></div>
+        </div>
+        <div class="fg"><label>${t('category')}</label><input id="pCat" list="catList" value="${p ? esc(p.category || '') : ''}"><datalist id="catList">${cats.map(c => `<option value="${esc(c)}">`).join('')}</datalist></div>
+        <div class="fg"><label>${t('nameField')} *</label>
+          <input id="nZh" placeholder="中文" value="${nm('zh')}" style="margin-bottom:8px">
+          <input id="nEn" placeholder="English" value="${nm('en')}" style="margin-bottom:8px">
+          <input id="nMs" placeholder="Bahasa Melayu" value="${nm('ms')}">
+          <div class="ferr" id="eName">${t('nameHint')}</div><small>${t('nameHint')}</small></div>
+        <div class="fg"><label>${t('descField')}</label>
+          <textarea id="dZh" rows="2" placeholder="中文" style="margin-bottom:8px">${ds('zh')}</textarea>
+          <textarea id="dEn" rows="2" placeholder="English" style="margin-bottom:8px">${ds('en')}</textarea>
+          <textarea id="dMs" rows="2" placeholder="Bahasa Melayu">${ds('ms')}</textarea></div>
+        <div class="actions">
+          <button type="button" class="btn light" data-act="tab" data-tab="products">${t('cancel')}</button>
+          ${p ? '' : `<button type="submit" class="btn light" data-again="1">${t('saveAnother')}</button>`}
+          <button type="submit" class="btn grow">${t('save')}</button>
+        </div>
+      </form>`);
+    $('pForm').addEventListener('submit', e => { e.preventDefault(); submitProduct(e.submitter && e.submitter.dataset.again === '1'); });
+  }
+  function submitProduct(again){
+    const id = $('pForm').dataset.id ? Number($('pForm').dataset.id) : null;
+    const names = {zh:$('nZh').value.trim(), en:$('nEn').value.trim(), ms:$('nMs').value.trim()};
+    const descs = {zh:$('dZh').value.trim(), en:$('dEn').value.trim(), ms:$('dMs').value.trim()};
+    const price = parseFloat($('pPrice').value);
+    let ok = true;
+    const noName = !names.zh && !names.en && !names.ms;
+    $('eName').classList.toggle('show', noName); if(noName) ok = false;
+    const badPrice = isNaN(price) || price < 0;
+    $('pPrice').classList.toggle('err', badPrice); $('ePrice').classList.toggle('show', badPrice); if(badPrice) ok = false;
+    if(!ok) return;
+    const stockRaw = $('pStock').value.trim();
+    const stock = stockRaw === '' ? null : Math.max(0, parseInt(stockRaw, 10) || 0);
+    const data = {names, descs, price, stock, category:$('pCat').value.trim(), image:formImage};
+    if(id){
+      const p = getP(id); Object.assign(p, data);
+    } else {
+      products.push(Object.assign({id:Date.now()}, data));
+    }
+    if(!save(K.products, products)) return;
+    cleanCart(); save(K.cart, cart); updateBadge(); renderProducts(); toast('✓ ' + t('saved'));
+    if(again && !id){ viewProductForm(null); $('modal').scrollTop = 0; $('nZh').focus(); }
+    else { adminTab = 'products'; viewAdmin(); }
+  }
+
+  /* ================= events ================= */
+  $('langSwitch').addEventListener('click', e => {
+    const b = e.target.closest('[data-lang]'); if(!b) return;
+    lang = b.dataset.lang; save(K.lang, lang); applyStatic(); renderProducts();
+    if(renderModal) renderModal();
+  });
+  $('searchInput').addEventListener('input', e => { query = e.target.value; renderProducts(); });
+  $('sortSel').addEventListener('change', e => { sort = e.target.value; renderProducts(); });
+  $('chips').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if(!b) return; category = b.dataset.cat; renderProducts(); });
+  $('productsGrid').addEventListener('click', e => {
+    const a = e.target.closest('[data-add]'); if(a){ addToCart(Number(a.dataset.add)); return; }
+    const ed = e.target.closest('[data-edit]');
+    if(ed){ openModal(() => viewProductForm(Number(ed.dataset.edit)), true); }
+  });
+  $('cartBtn').addEventListener('click', () => openModal(viewCart));
+  $('adminBtn').addEventListener('click', () => openModal(admin ? viewAdmin : viewPin, admin));
+  $('overlay').addEventListener('click', e => { if(e.target === $('overlay')) closeModal(); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+  $('modal').addEventListener('click', e => {
+    const el = e.target.closest('[data-act]'); if(!el) return;
+    const act = el.dataset.act, id = Number(el.dataset.id);
+    switch(act){
+      case 'close': closeModal(); break;
+      case 'toCart': viewCart(); break;
+      case 'toCheckout': viewCheckout(); break;
+      case 'plus': changeQty(id, 1); break;
+      case 'minus': changeQty(id, -1); break;
+      case 'tab': adminTab = el.dataset.tab; viewAdmin(); break;
+      case 'newProduct': viewProductForm(null); $('modal').scrollTop = 0; break;
+      case 'editProduct': viewProductForm(id); $('modal').scrollTop = 0; break;
+      case 'delProduct':
+        if(confirm(t('confirmDelete'))){
+          products = products.filter(p => p.id !== id);
+          save(K.products, products); cleanCart(); save(K.cart, cart); updateBadge(); renderProducts(); viewAdmin();
+        } break;
+      case 'lock':
+        admin = false; sessionStorage.removeItem('vs8_admin'); applyStatic(); renderProducts(); closeModal(); break;
+      case 'rmPhoto':
+        formImage = ''; { const pv = $('pPrev'); pv.style.visibility = 'hidden'; pv.removeAttribute('src'); } break;
+      case 'rmQr':
+        settingsQr = ''; { const pv = $('qrPrev'); pv.style.visibility = 'hidden'; pv.removeAttribute('src'); } break;
+      case 'export': {
+        const blob = new Blob([JSON.stringify({products, settings, orders}, null, 2)], {type:'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = 'shop-backup-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000); break; }
+      case 'import': $('hiddenImport').click(); break;
+    }
+  });
+  $('modal').addEventListener('change', e => {
+    const tgt = e.target;
+    if(tgt.id === 'pFile' && tgt.files[0]){
+      resizeImage(tgt.files[0], 700, d => { formImage = d; const pv = $('pPrev'); pv.src = d; pv.style.visibility = 'visible'; });
+    } else if(tgt.id === 'qrFile' && tgt.files[0]){
+      resizeImage(tgt.files[0], 600, d => { settingsQr = d; const pv = $('qrPrev'); pv.src = d; pv.style.visibility = 'visible'; });
+    } else if(tgt.dataset && tgt.dataset.act === 'status'){
+      setOrderStatus(tgt.dataset.ref, tgt.value);
+    }
+  });
+  $('hiddenImport').addEventListener('change', e => {
+    const f = e.target.files[0]; if(!f) return;
+    const fr = new FileReader();
+    fr.onload = () => {
+      try{
+        const d = JSON.parse(fr.result);
+        if(!d || !Array.isArray(d.products)) throw 0;
+        products = d.products;
+        if(d.settings) settings = Object.assign({}, defaultSettings, d.settings);
+        if(Array.isArray(d.orders)) orders = d.orders;
+        save(K.products, products); save(K.settings, settings); save(K.orders, orders);
+        cleanCart(); save(K.cart, cart); applyStatic(); renderProducts(); viewAdmin(); toast('✓ ' + t('imported'));
+      }catch(err){ toast(t('importFail')); }
+      e.target.value = '';
+    };
+    fr.readAsText(f);
+  });
+
+  /* ================= init ================= */
+  cleanCart(); save(K.cart, cart);
+  applyStatic(); renderProducts();
+})();
+</script>
+</body>
+</html>

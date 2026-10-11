@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电商利润计算器 · Shopee 多面手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .app-container {
+            max-width: 1300px;
+            width: 100%;
+        }
+
+        /* header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #0b2b4a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header h1 span {
+            background: #ff6b35;
+            color: white;
+            font-size: 14px;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+
+        .badge-shopee {
+            background: #ee4d2d;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eef2f6;
+            transition: all 0.1s ease;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .card h2 i {
+            font-size: 22px;
+            font-style: normal;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group label span.unit {
+            font-size: 12px;
+            color: #94a3b8;
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #0f172a;
+            background: #ffffff;
+            transition: 0.15s;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #ee4d2d;
+            box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.1);
+        }
+
+        .form-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .form-group input[type="number"]::-webkit-inner-spin-button {
+            opacity: 0.5;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .results-panel {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid #eef2f6;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+            margin-top: 8px;
+            height: fit-content;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px dashed #e9edf2;
+            font-size: 15px;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .result-label .hint {
+            font-size: 12px;
+            color: #94a3b8;
+            background: #f8fafc;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .result-value {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .highlight-green {
+            color: #0f8b4f;
+            background: #e6f7ef;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: 700;
+        }
+
+        .highlight-red {
+            color: #bc1c1c;
+            background: #fee9e7;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: 700;
+        }
+
+        .highlight-orange {
+            color: #b45309;
+            background: #fff3e6;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: 700;
+        }
+
+        .big-number {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            color: #0b2b4a;
+        }
+
+        .metric-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border: 1px solid #eef2f6;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .metric-value small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #64748b;
+        }
+
+        .badge-roi {
+            background: #fee9e7;
+            color: #bc1c1c;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .badge-roi.positive {
+            background: #e6f7ef;
+            color: #0f8b4f;
+        }
+
+        .divider {
+            height: 1px;
+            background: #eef2f6;
+            margin: 20px 0;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            color: #1e293b;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: help;
+            margin-left: 4px;
+        }
+
+        /* 自定义提示框简化 */
+        [data-tip] {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dashed #94a3b8;
+        }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .row-3 {
+                grid-template-columns: 1fr;
+            }
+            .big-number {
+                font-size: 26px;
+            }
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #94a3b8;
+            text-align: center;
+            padding: 12px;
+            background: #ffffffd0;
+            border-radius: 40px;
+            backdrop-filter: blur(2px);
+        }
+
+        .btn-reset {
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-reset:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .btn-reset:active {
+            background: #f1f5f9;
+        }
+
+        .currency-symbol {
+            font-weight: 400;
+            color: #94a3b8;
+            margin-right: 2px;
+        }
+
+        .chip {
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-size: 12px;
+            color: #334155;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>
+                ⚡ 电商利润计算器
+                <span>Shopee / 通用</span>
+            </h1>
+            <div class="flex-between" style="gap: 12px;">
+                <div class="badge-shopee">
+                    🇲🇾 马来西亚站点适配
+                </div>
+                <button class="btn-reset" id="resetBtn">
+                    ↻ 重置为默认
+                </button>
+            </div>
+        </div>
+
+        <!-- 主内容: 左侧输入 右侧结果 -->
+        <div class="grid-2">
+            <!-- 左: 输入区域 -->
+            <div>
+                <!-- 成本卡片 -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <h2><i>💰</i> 成本 & 售价</h2>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>采购成本 (HPP) <span class="unit">RM</span></label>
+                            <input type="number" id="cost" value="15.00" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>售价 (售价) <span class="unit">RM</span></label>
+                            <input type="number" id="price" value="39.90" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>运费成本 (卖家承担) <span class="unit">RM</span></label>
+                            <input type="number" id="shippingCost" value="4.50" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>其他成本 / 包材 <span class="unit">RM</span></label>
+                            <input type="number" id="otherCost" value="1.00" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 平台费用 & 广告 -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <h2><i>📊</i> 平台佣金 & 广告</h2>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>佣金率 (%) <span class="unit">%</span></label>
+                            <input type="number" id="commissionRate" value="6.0" step="0.1" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>交易手续费 (%) <span class="unit">%</span></label>
+                            <input type="number" id="transactionFeeRate" value="2.0" step="0.1" min="0">
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>广告花费 / 订单 <span class="unit">RM</span></label>
+                            <input type="number" id="adCostPerOrder" value="3.50" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>免运活动费 / 订单 <span class="unit">RM</span></label>
+                            <input type="number" id="freeShippingFee" value="2.00" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 额外参数: 目标ROI / 目标利润 / 广告花费总额用于ROAS -->
+                <div class="card">
+                    <h2><i>🎯</i> 目标 & 广告指标</h2>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>广告总花费 (可选) <span class="unit">RM</span></label>
+                            <input type="number" id="totalAdSpend" value="350.00" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>广告带来的销售额 <span class="unit">RM</span></label>
+                            <input type="number" id="adRevenue" value="1200.00" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>目标利润率 (%) <span class="unit">%</span></label>
+                            <input type="number" id="targetMargin" value="20.0" step="0.1" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>月订单量 (预估) <span class="unit">单</span></label>
+                            <input type="number" id="monthlyOrders" value="150" step="1" min="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右: 结果面板 -->
+            <div class="results-panel">
+                <h2 style="margin-bottom: 20px;"><i>🧮</i> 利润 & ROI 分析</h2>
+
+                <!-- 核心指标：单笔净利润、ROI、ROAS -->
+                <div class="metric-card">
+                    <div class="metric-label">单笔净利润 (Net Profit)</div>
+                    <div class="metric-value" id="netProfitDisplay">
+                        <span class="currency-symbol">RM</span> 0.00
+                        <span id="netProfitBadge" class="badge-roi">0%</span>
+                    </div>
+                </div>
+
+                <div class="row-2" style="gap: 16px; margin-bottom: 16px;">
+                    <div class="metric-card" style="margin-bottom: 0;">
+                        <div class="metric-label">ROI (投资回报率)</div>
+                        <div class="metric-value" id="roiDisplay">0%</div>
+                    </div>
+                    <div class="metric-card" style="margin-bottom: 0;">
+                        <div class="metric-label">ROAS (广告)</div>
+                        <div class="metric-value" id="roasDisplay">0.00x</div>
+                    </div>
+                </div>
+
+                <!-- 详细拆解 -->
+                <div class="divider"></div>
+
+                <div class="result-item">
+                    <span class="result-label">总成本 (含广告/运费/佣金)</span>
+                    <span class="result-value" id="totalCostDisplay">RM 0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">平台佣金 + 手续费</span>
+                    <span class="result-value" id="platformFeeDisplay">RM 0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">广告 + 免运活动费</span>
+                    <span class="result-value" id="adsAndFreeDisplay">RM 0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">毛利 (售价 - 采购 - 运费 - 其他)</span>
+                    <span class="result-value" id="grossProfitDisplay">RM 0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">毛利率</span>
+                    <span class="result-value" id="grossMarginDisplay">0%</span>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 额外指标：保本ROAS、目标利润所需广告空间等 -->
+                <div class="result-item">
+                    <span class="result-label">保本 ROAS (盈亏平衡)</span>
+                    <span class="result-value" id="breakevenRoasDisplay">0.00x</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">最大可承受广告费/单</span>
+                    <span class="result-value" id="maxAdAllowanceDisplay">RM 0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">达到目标利润率所需售价</span>
+                    <span class="result-value" id="targetPriceDisplay">RM 0.00</span>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 月度预估 -->
+                <div class="metric-card" style="background: #f1f9fe; border-color: #d0e7ff;">
+                    <div class="metric-label">📅 月度预估利润 (基于订单量)</div>
+                    <div class="metric-value" id="monthlyProfitDisplay">RM 0.00</div>
+                    <div style="font-size: 14px; color: #475569; margin-top: 8px;">
+                        基于 <span id="monthlyOrdersDisplay">150</span> 单/月 · 
+                        单笔利润 <span id="unitProfitSmall">RM 0.00</span>
+                    </div>
+                </div>
+
+                <div class="footer-note">
+                    ⚡ 实时计算 · 所有金额均为马来西亚令吉 (RM)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // 获取所有输入元素
+            const costInput = document.getElementById('cost');
+            const priceInput = document.getElementById('price');
+            const shippingCostInput = document.getElementById('shippingCost');
+            const otherCostInput = document.getElementById('otherCost');
+            const commissionRateInput = document.getElementById('commissionRate');
+            const transactionFeeRateInput = document.getElementById('transactionFeeRate');
+            const adCostPerOrderInput = document.getElementById('adCostPerOrder');
+            const freeShippingFeeInput = document.getElementById('freeShippingFee');
+            const totalAdSpendInput = document.getElementById('totalAdSpend');
+            const adRevenueInput = document.getElementById('adRevenue');
+            const targetMarginInput = document.getElementById('targetMargin');
+            const monthlyOrdersInput = document.getElementById('monthlyOrders');
+
+            // 显示元素
+            const netProfitDisplay = document.getElementById('netProfitDisplay');
+            const netProfitBadge = document.getElementById('netProfitBadge');
+            const roiDisplay = document.getElementById('roiDisplay');
+            const roasDisplay = document.getElementById('roasDisplay');
+            const totalCostDisplay = document.getElementById('totalCostDisplay');
+            const platformFeeDisplay = document.getElementById('platformFeeDisplay');
+            const adsAndFreeDisplay = document.getElementById('adsAndFreeDisplay');
+            const grossProfitDisplay = document.getElementById('grossProfitDisplay');
+            const grossMarginDisplay = document.getElementById('grossMarginDisplay');
+            const breakevenRoasDisplay = document.getElementById('breakevenRoasDisplay');
+            const maxAdAllowanceDisplay = document.getElementById('maxAdAllowanceDisplay');
+            const targetPriceDisplay = document.getElementById('targetPriceDisplay');
+            const monthlyProfitDisplay = document.getElementById('monthlyProfitDisplay');
+            const monthlyOrdersDisplay = document.getElementById('monthlyOrdersDisplay');
+            const unitProfitSmall = document.getElementById('unitProfitSmall');
+
+            // 辅助函数：格式化金额
+            function formatRM(value) {
+                return 'RM ' + value.toFixed(2);
+            }
+
+            function formatPercent(value) {
+                return value.toFixed(2) + '%';
+            }
+
+            // 主计算函数
+            function calculate() {
+                // 读取数值，提供默认0防止NaN
+                const cost = parseFloat(costInput.value) || 0;
+                const price = parseFloat(priceInput.value) || 0;
+                const shippingCost = parseFloat(shippingCostInput.value) || 0;
+                const otherCost = parseFloat(otherCostInput.value) || 0;
+                const commissionRate = parseFloat(commissionRateInput.value) || 0;
+                const transactionFeeRate = parseFloat(transactionFeeRateInput.value) || 0;
+                const adCostPerOrder = parseFloat(adCostPerOrderInput.value) || 0;
+                const freeShippingFee = parseFloat(freeShippingFeeInput.value) || 0;
+                const totalAdSpend = parseFloat(totalAdSpendInput.value) || 0;
+                const adRevenue = parseFloat(adRevenueInput.value) || 0;
+                const targetMargin = parseFloat(targetMarginInput.value) || 0;
+                const monthlyOrders = parseFloat(monthlyOrdersInput.value) || 0;
+
+                // 1. 计算平台佣金 + 手续费（基于售价）
+                const commissionAmount = price * (commissionRate / 100);
+                const transactionFeeAmount = price * (transactionFeeRate / 100);
+                const platformFeeTotal = commissionAmount + transactionFeeAmount;
+
+                // 2. 广告 + 免运活动费（每单）
+                const adsAndFreeTotal = adCostPerOrder + freeShippingFee;
+
+                // 3. 总成本（不含利润，含所有费用）
+                const totalCostPerOrder = cost + shippingCost + otherCost + platformFeeTotal + adsAndFreeTotal;
+                
+                // 4. 毛利（售价 - 采购成本 - 运费 - 其他成本） 不扣除平台费/广告，这是传统毛利
+                const grossProfit = price - cost - shippingCost - otherCost;
+                const grossMargin = price > 0 ? (grossProfit / price) * 100 : 0;
+
+                // 5. 净利润 = 售价 - 总成本
+                const netProfit = price - totalCostPerOrder;
+                const netMargin = price > 0 ? (netProfit / price) * 100 : 0;
+
+                // 6. ROI (投资回报率) = 净利润 / 总成本投入 * 100  (总成本投入 = 总成本)
+                const roi = totalCostPerOrder > 0 ? (netProfit / totalCostPerOrder) * 100 : 0;
+
+                // 7. ROAS (广告花费回报) = 广告带来的销售额 / 广告总花费
+                let roas = 0;
+                if (totalAdSpend > 0) {
+                    roas = adRevenue / totalAdSpend;
+                } else {
+                    roas = 0;
+                }
+
+                // 8. 保本 ROAS (盈亏平衡点) = 售价 / 最大可承受广告费？ 我们这样定义：保本ROAS = 广告销售额 / 广告花费，使得净利润为0时的ROAS
+                // 更合理: 保本ROAS = 1 / (1 - (变动成本率))，但这里直接用 (售价 - 非广告成本) / 广告费上限？我们使用更直观的方式:
+                // 保本ROAS = 售价 / (售价 - 非广告总成本)，其中非广告总成本 = 总成本 - 广告成本(adCostPerOrder + freeShippingFee 中的广告部分)
+                // 但 freeShippingFee 不算广告，可以算作平台活动费。所以为了清晰，用“广告+活动费”整体作为可调整的营销费用。
+                // 定义保本ROAS为: 广告花费/广告销售额的盈亏平衡比率？更常见：保本ROAS = 售价 / (售价 - 采购成本 - 运费 - 其他 - 平台费) 
+                // 这里我们用: 保本ROAS = 售价 / 毛利(不含广告及活动费)  如果毛利<=0 则无法保本
+                const nonAdCost = cost + shippingCost + otherCost + platformFeeTotal; // 不含广告及免运活动费
+                const contributionMargin = price - nonAdCost; // 贡献利润(可用于覆盖广告费)
+                let breakevenRoas = 0;
+                if (contributionMargin > 0) {
+                    breakevenRoas = price / contributionMargin;  // 每1元广告费需要带来多少销售额才能保本
+                } else {
+                    breakevenRoas = Infinity; // 表示不可能保本
+                }
+
+                // 9. 最大可承受广告费/单 = 贡献利润 (因为净利润 = 贡献利润 - 广告活动费)
+                const maxAdAllowance = contributionMargin > 0 ? contributionMargin : 0;
+
+                // 10. 达到目标利润率所需售价: 目标净利润 = price * (targetMargin/100)
+                // 净利润 = price - cost - shipping - other - platformFee - adCost - freeShipping
+                // 平台费 = price * (commission+transaction)/100
+                // 设 adCost, freeShipping 为固定每单，则:
+                // price - cost - shipping - other - price*(cr+tr)/100 - adCost - freeShipping = price * tm/100
+                // price * [1 - (cr+tr)/100 - tm/100] = cost + shipping + other + adCost + freeShipping
+                // price = (cost + shipping + other + adCost + freeShipping) / [1 - (cr+tr+tm)/100]
+                const cr = commissionRate / 100;
+                const tr = transactionFeeRate / 100;
+                const tm = targetMargin / 100;
+                const denominator = 1 - (cr + tr + tm);
+                let targetPrice = 0;
+                if (denominator > 0) {
+                    const numerator = cost + shippingCost + otherCost + adCostPerOrder + freeShippingFee;
+                    targetPrice = numerator / denominator;
+                } else {
+                    targetPrice = NaN; // 不可能达到
+                }
+
+                // 11. 月度利润 = 单笔净利润 * 月订单量
+                const monthlyProfit = netProfit * monthlyOrders;
+
+                // --- 更新UI ---
+                // 净利润
+                netProfitDisplay.innerHTML = `<span class="currency-symbol">RM</span> ${netProfit.toFixed(2)}`;
+                // 净利润徽章
+                if (netProfit >= 0) {
+                    netProfitBadge.textContent = netMargin.toFixed(1) + '%';
+                    netProfitBadge.className = 'badge-roi positive';
+                } else {
+                    netProfitBadge.textContent = netMargin.toFixed(1) + '%';
+                    netProfitBadge.className = 'badge-roi';
+                }
+
+                // ROI
+                roiDisplay.textContent = roi.toFixed(2) + '%';
+                roiDisplay.className = roi >= 0 ? 'metric-value highlight-green' : 'metric-value highlight-red';
+
+                // ROAS
+                roasDisplay.textContent = roas.toFixed(2) + 'x';
+                // 总成本
+                totalCostDisplay.textContent = formatRM(totalCostPerOrder);
+                // 平台费
+                platformFeeDisplay.textContent = formatRM(platformFeeTotal);
+                // 广告及活动
+                adsAndFreeDisplay.textContent = formatRM(adsAndFreeTotal);
+                // 毛利
+                grossProfitDisplay.textContent = formatRM(grossProfit);
+                // 毛利率
+                grossMarginDisplay.textContent = formatPercent(grossMargin);
+
+                // 保本ROAS
+                if (breakevenRoas === Infinity || breakevenRoas <= 0) {
+                    breakevenRoasDisplay.textContent = '无法保本';
+                    breakevenRoasDisplay.className = 'result-value highlight-red';
+                } else {
+                    breakevenRoasDisplay.textContent = breakevenRoas.toFixed(2) + 'x';
+                    breakevenRoasDisplay.className = 'result-value';
+                }
+
+                // 最大可承受广告费
+                maxAdAllowanceDisplay.textContent = formatRM(maxAdAllowance);
+
+                // 目标售价
+                if (isNaN(targetPrice) || targetPrice <= 0) {
+                    targetPriceDisplay.textContent = '无法达到';
+                    targetPriceDisplay.className = 'result-value highlight-red';
+                } else {
+                    targetPriceDisplay.textContent = formatRM(targetPrice);
+                    targetPriceDisplay.className = 'result-value';
+                }
+
+                // 月度利润
+                monthlyProfitDisplay.textContent = formatRM(monthlyProfit);
+                monthlyOrdersDisplay.textContent = monthlyOrders;
+                unitProfitSmall.textContent = formatRM(netProfit);
+
+                // 如果月度利润为负，改变颜色
+                if (monthlyProfit < 0) {
+                    monthlyProfitDisplay.style.color = '#bc1c1c';
+                } else {
+                    monthlyProfitDisplay.style.color = '#0b2b4a';
+                }
+            }
+
+            // 重置为默认值
+            function resetToDefaults() {
+                costInput.value = '15.00';
+                priceInput.value = '39.90';
+                shippingCostInput.value = '4.50';
+                otherCostInput.value = '1.00';
+                commissionRateInput.value = '6.0';
+                transactionFeeRateInput.value = '2.0';
+                adCostPerOrderInput.value = '3.50';
+                freeShippingFeeInput.value = '2.00';
+                totalAdSpendInput.value = '350.00';
+                adRevenueInput.value = '1200.00';
+                targetMarginInput.value = '20.0';
+                monthlyOrdersInput.value = '150';
+                calculate();
+            }
+
+            // 绑定事件
+            const inputElements = [
+                costInput, priceInput, shippingCostInput, otherCostInput,
+                commissionRateInput, transactionFeeRateInput, adCostPerOrderInput,
+                freeShippingFeeInput, totalAdSpendInput, adRevenueInput,
+                targetMarginInput, monthlyOrdersInput
+            ];
+            inputElements.forEach(el => {
+                el.addEventListener('input', calculate);
+                el.addEventListener('change', calculate);
+            });
+
+            // 初始计算
+            calculate();
+
+            // 重置按钮
+            document.getElementById('resetBtn').addEventListener('click', resetToDefaults);
+
+        })();
+    </script>
+</body>
+</html>
