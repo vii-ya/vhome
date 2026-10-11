@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Excel Combiner Pro</title>
+
+<!-- SheetJS 0.20.3 - official CDN -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Inter,Arial,sans-serif;
+    background:#f4f7fb;
+    color:#172033;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:35px 18px 60px;
+}
+
+.header{
+    margin-bottom:25px;
+}
+
+.badge{
+    display:inline-block;
+    color:#2563eb;
+    background:#eaf1ff;
+    border-radius:20px;
+    padding:7px 12px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.5px;
+}
+
+h1{
+    font-size:42px;
+    margin:12px 0 8px;
+    letter-spacing:-1.5px;
+}
+
+.subtitle{
+    color:#667085;
+    line-height:1.6;
+    max-width:760px;
+}
+
+.card{
+    background:#fff;
+    border:1px solid #e4e9f0;
+    border-radius:18px;
+    box-shadow:0 12px 35px rgba(15,23,42,.07);
+    margin-top:18px;
+    overflow:hidden;
+}
+
+.drop-area{
+    padding:45px 25px;
+    text-align:center;
+    border:2px dashed #b9c7dc;
+    border-radius:16px;
+    margin:20px;
+    background:#f8fbff;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.drop-area:hover,
+.drop-area.drag{
+    border-color:#2563eb;
+    background:#eff6ff;
+}
+
+.upload-icon{
+    width:64px;
+    height:64px;
+    display:grid;
+    place-items:center;
+    margin:0 auto 15px;
+    background:#dbeafe;
+    color:#2563eb;
+    border-radius:17px;
+    font-size:30px;
+    font-weight:bold;
+}
+
+.drop-area h2{
+    margin:5px 0 8px;
+}
+
+.drop-area p{
+    color:#667085;
+    line-height:1.6;
+    margin:0;
+}
+
+.drop-area strong{
+    color:#2563eb;
+}
+
+input[type=file]{
+    display:none;
+}
+
+.toolbar{
+    padding:17px 20px;
+    border-top:1px solid #edf0f4;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.stats{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.stat{
+    background:#f8fafc;
+    border:1px solid #e5eaf0;
+    padding:8px 11px;
+    border-radius:9px;
+    font-size:13px;
+    color:#667085;
+}
+
+.stat b{
+    color:#172033;
+}
+
+.buttons{
+    display:flex;
+    gap:8px;
+}
+
+button{
+    border:0;
+    border-radius:10px;
+    padding:12px 16px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.btn-primary{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-primary:hover{
+    background:#1d4ed8;
+}
+
+.btn-primary:disabled{
+    background:#a8bce8;
+    cursor:not-allowed;
+}
+
+.btn-secondary{
+    background:white;
+    color:#344054;
+    border:1px solid #d9e0e8;
+}
+
+.section-head{
+    padding:16px 20px;
+    border-bottom:1px solid #edf0f4;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.section-head h3{
+    margin:0;
+    font-size:16px;
+}
+
+.section-head span{
+    color:#667085;
+    font-size:13px;
+}
+
+.file-list{
+    padding:8px 18px;
+    max-height:380px;
+    overflow:auto;
+}
+
+.file-row{
+    display:grid;
+    grid-template-columns:35px 1fr auto auto;
+    gap:12px;
+    align-items:center;
+    padding:12px 5px;
+    border-bottom:1px solid #edf0f4;
+}
+
+.file-row:last-child{
+    border-bottom:0;
+}
+
+.file-number{
+    width:29px;
+    height:29px;
+    display:grid;
+    place-items:center;
+    border-radius:8px;
+    background:#eef4ff;
+    color:#2563eb;
+    font-size:12px;
+    font-weight:700;
+}
+
+.file-name{
+    font-weight:700;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.file-size{
+    color:#667085;
+    font-size:12px;
+}
+
+.remove{
+    background:white;
+    color:#98a2b3;
+    padding:7px;
+}
+
+.remove:hover{
+    color:#dc2626;
+}
+
+.options{
+    padding:20px;
+}
+
+.option-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.option{
+    padding:14px;
+    border:1px solid #e4e9f0;
+    border-radius:12px;
+    background:#fbfcfe;
+}
+
+.option label{
+    display:flex;
+    gap:10px;
+    cursor:pointer;
+}
+
+.option input{
+    accent-color:#2563eb;
+    margin-top:3px;
+}
+
+.option strong{
+    display:block;
+    margin-bottom:5px;
+    font-size:14px;
+}
+
+.option small{
+    color:#667085;
+    line-height:1.45;
+}
+
+.note{
+    margin-top:15px;
+    padding:13px;
+    border-radius:10px;
+    background:#fffbeb;
+    border:1px solid #fde68a;
+    color:#92400e;
+    font-size:12px;
+    line-height:1.5;
+}
+
+.progress-box{
+    padding:20px;
+}
+
+.progress-top{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:9px;
+}
+
+.progress-bg{
+    height:10px;
+    background:#e9eef5;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#2563eb,#60a5fa);
+    transition:width:.2s;
+}
+
+.progress-detail{
+    color:#667085;
+    font-size:12px;
+    margin-top:10px;
+}
+
+.status{
+    display:none;
+    padding:14px 16px;
+    margin-top:18px;
+    border-radius:12px;
+    line-height:1.5;
+    font-size:13px;
+}
+
+.status.show{display:block}
+
+.status.info{
+    color:#1d4ed8;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+}
+
+.status.success{
+    color:#166534;
+    background:#ecfdf3;
+    border:1px solid #bbf7d0;
+}
+
+.status.error{
+    color:#991b1b;
+    background:#fff1f2;
+    border:1px solid #fecdd3;
+}
+
+.preview{
+    display:none;
+}
+
+.preview-wrap{
+    max-height:380px;
+    overflow:auto;
+}
+
+.preview table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+}
+
+.preview th,
+.preview td{
+    padding:8px 10px;
+    border-bottom:1px solid #edf0f4;
+    white-space:nowrap;
+    text-align:left;
+}
+
+.preview th{
+    position:sticky;
+    top:0;
+    background:#f8fafc;
+}
+
+.footer{
+    text-align:center;
+    color:#98a2b3;
+    font-size:12px;
+    margin-top:22px;
+}
+
+@media(max-width:750px){
+
+    h1{
+        font-size:32px;
+    }
+
+    .option-grid{
+        grid-template-columns:1fr;
+    }
+
+    .file-row{
+        grid-template-columns:32px 1fr auto;
+    }
+
+    .file-size{
+        display:none;
+    }
+
+    .buttons{
+        width:100%;
+    }
+
+    .buttons button{
+        flex:1;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <span class="badge">EXCEL UTILITY</span>
+
+        <h1>Excel Combiner Pro</h1>
+
+        <p class="subtitle">
+            Combine multiple Excel files into one clean Excel workbook.
+            Duplicate column names such as
+            <b>Order</b>, <b>order</b> and <b> Order </b>
+            are automatically treated as the same column.
+        </p>
+    </div>
+
+
+    <!-- UPLOAD -->
+    <div class="card">
+
+        <div
+            class="drop-area"
+            id="dropArea"
+        >
+
+            <div class="upload-icon">↑</div>
+
+            <h2>Drop Excel files here</h2>
+
+            <p>
+                or <strong>click to select files</strong><br>
+                Supports XLSX, XLS and CSV
+            </p>
+
+            <input
+                id="fileInput"
+                type="file"
+                multiple
+                accept=".xlsx,.xls,.csv"
+            >
+
+        </div>
+
+
+        <div class="toolbar">
+
+            <div class="stats">
+
+                <div class="stat">
+                    Files:
+                    <b id="fileCount">0</b>
+                </div>
+
+                <div class="stat">
+                    Rows:
+                    <b id="rowCount">0</b>
+                </div>
+
+                <div class="stat">
+                    Columns:
+                    <b id="columnCount">0</b>
+                </div>
+
+                <div class="stat">
+                    Status:
+                    <b id="state">Waiting</b>
+                </div>
+
+            </div>
+
+
+            <div class="buttons">
+
+                <button
+                    class="btn-secondary"
+                    id="clearBtn"
+                >
+                    Clear
+                </button>
+
+                <button
+                    class="btn-primary"
+                    id="combineBtn"
+                    disabled
+                >
+                    Combine & Download
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FILE LIST -->
+    <div
+        class="card"
+        id="fileCard"
+        style="display:none"
+    >
+
+        <div class="section-head">
+
+            <h3>Selected Files</h3>
+
+            <span id="fileCountText">
+                0 files
+            </span>
+
+        </div>
+
+        <div
+            class="file-list"
+            id="fileList"
+        ></div>
+
+    </div>
+
+
+    <!-- OPTIONS -->
+    <div class="card">
+
+        <div class="section-head">
+
+            <h3>Combine Options</h3>
+
+            <span>Recommended</span>
+
+        </div>
+
+
+        <div class="options">
+
+            <div class="option-grid">
+
+                <div class="option">
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            id="matchHeaders"
+                            checked
+                        >
+
+                        <span>
+
+                            <strong>
+                                Match columns by name
+                            </strong>
+
+                            <small>
+                                Order, order and ORDER
+                                become one Order column.
+                            </small>
+
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="option">
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            id="addSource"
+                            checked
+                        >
+
+                        <span>
+
+                            <strong>
+                                Add Source File
+                            </strong>
+
+                            <small>
+                                Adds the original Excel
+                                filename to each row.
+                            </small>
+
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="option">
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            id="removeBlank"
+                            checked
+                        >
+
+                        <span>
+
+                            <strong>
+                                Remove blank rows
+                            </strong>
+
+                            <small>
+                                Empty rows will not be copied.
+                            </small>
+
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <div class="note">
+
+                <b>Important:</b>
+                This tool does not create Order 1, Order 2,
+                Order 3 simply because multiple files contain
+                an Order column. All matching headers are merged
+                into one column.
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROGRESS -->
+    <div
+        class="card"
+        id="progressCard"
+        style="display:none"
+    >
+
+        <div class="progress-box">
+
+            <div class="progress-top">
+
+                <span id="progressText">
+                    Starting...
+                </span>
+
+                <span id="progressPercent">
+                    0%
+                </span>
+
+            </div>
+
+            <div class="progress-bg">
+
+                <div
+                    class="progress-bar"
+                    id="progressBar"
+                ></div>
+
+            </div>
+
+            <div
+                class="progress-detail"
+                id="progressDetail"
+            >
+                Please wait...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PREVIEW -->
+    <div
+        class="card"
+        id="previewCard"
+        style="display:none"
+    >
+
+        <div class="section-head">
+
+            <h3>Preview</h3>
+
+            <span>
+                First 50 rows
+            </span>
+
+        </div>
+
+        <div class="preview-wrap">
+
+            <div
+                class="preview"
+                id="preview"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="status"
+        id="status"
+    ></div>
+
+
+    <div class="footer">
+
+        Files are processed locally in your browser.
+        They are not uploaded to a server by this HTML.
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   GLOBAL STATE
+===================================================== */
+
+const state = {
+    files: [],
+    headers: [],
+    rows: [],
+    processing: false
+};
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const fileInput =
+    document.getElementById("fileInput");
+
+const dropArea =
+    document.getElementById("dropArea");
+
+const fileCard =
+    document.getElementById("fileCard");
+
+const fileList =
+    document.getElementById("fileList");
+
+const combineBtn =
+    document.getElementById("combineBtn");
+
+const clearBtn =
+    document.getElementById("clearBtn");
+
+const statusBox =
+    document.getElementById("status");
+
+
+/* =====================================================
+   UPLOAD
+===================================================== */
+
+dropArea.addEventListener(
+    "click",
+    () => fileInput.click()
+);
+
+
+fileInput.addEventListener(
+    "change",
+    e => {
+
+        addFiles(
+            Array.from(e.target.files)
+        );
+
+        /*
+         * Allow selecting the same file again later.
+         */
+        fileInput.value = "";
+
+    }
+);
+
+
+/* =====================================================
+   DRAG AND DROP
+===================================================== */
+
+["dragenter","dragover"].forEach(
+    eventName => {
+
+        dropArea.addEventListener(
+            eventName,
+            e => {
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                dropArea.classList.add("drag");
+
+            }
+        );
+
+    }
+);
+
+
+["dragleave","drop"].forEach(
+    eventName => {
+
+        dropArea.addEventListener(
+            eventName,
+            e => {
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                dropArea.classList.remove("drag");
+
+            }
+        );
+
+    }
+);
+
+
+dropArea.addEventListener(
+    "drop",
+    e => {
+
+        addFiles(
+            Array.from(
+                e.dataTransfer.files
+            )
+        );
+
+    }
+);
+
+
+/* =====================================================
+   ADD FILES
+===================================================== */
+
+function addFiles(files){
+
+    if(state.processing){
+        return;
+    }
+
+
+    const valid =
+        files.filter(
+            file =>
+                /\.(xlsx|xls|csv)$/i.test(
+                    file.name
+                )
+        );
+
+
+    if(!valid.length){
+
+        showStatus(
+            "No supported Excel or CSV files were selected.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Avoid adding the exact same file twice.
+     */
+    const existing =
+        new Set(
+            state.files.map(
+                file =>
+                    file.name +
+                    "|" +
+                    file.size +
+                    "|" +
+                    file.lastModified
+            )
+        );
+
+
+    for(const file of valid){
+
+        const key =
+            file.name +
+            "|" +
+            file.size +
+            "|" +
+            file.lastModified;
+
+
+        if(!existing.has(key)){
+
+            state.files.push(file);
+
+            existing.add(key);
+
+        }
+
+    }
+
+
+    renderFiles();
+
+    showStatus(
+        state.files.length +
+        " file(s) ready. Click Combine & Download.",
+        "info"
+    );
+
+}
+
+
+/* =====================================================
+   FILE LIST
+===================================================== */
+
+function renderFiles(){
+
+    fileCard.style.display =
+        state.files.length
+            ? "block"
+            : "none";
+
+
+    document.getElementById(
+        "fileCount"
+    ).textContent =
+        state.files.length;
+
+
+    document.getElementById(
+        "fileCountText"
+    ).textContent =
+        state.files.length +
+        " file(s)";
+
+
+    combineBtn.disabled =
+        state.files.length === 0;
+
+
+    fileList.innerHTML =
+        state.files.map(
+            (file,index) => `
+
+                <div class="file-row">
+
+                    <div class="file-number">
+                        ${index + 1}
+                    </div>
+
+                    <div
+                        class="file-name"
+                        title="${escapeHTML(file.name)}"
+                    >
+                        ${escapeHTML(file.name)}
+                    </div>
+
+                    <div class="file-size">
+                        ${formatBytes(file.size)}
+                    </div>
+
+                    <button
+                        class="remove"
+                        onclick="removeFile(${index})"
+                    >
+                        ✕
+                    </button>
+
+                </div>
+
+            `
+        ).join("");
+
+}
+
+
+/* =====================================================
+   REMOVE FILE
+===================================================== */
+
+window.removeFile = function(index){
+
+    if(state.processing){
+        return;
+    }
+
+
+    state.files.splice(index,1);
+
+    renderFiles();
+
+};
+
+
+/* =====================================================
+   CLEAR
+===================================================== */
+
+clearBtn.addEventListener(
+    "click",
+    () => {
+
+        if(state.processing){
+            return;
+        }
+
+
+        state.files = [];
+        state.headers = [];
+        state.rows = [];
+
+
+        fileInput.value = "";
+
+
+        fileCard.style.display =
+            "none";
+
+
+        document.getElementById(
+            "progressCard"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "previewCard"
+        ).style.display =
+            "none";
+
+
+        combineBtn.disabled =
+            true;
+
+
+        document.getElementById(
+            "fileCount"
+        ).textContent =
+            "0";
+
+
+        document.getElementById(
+            "rowCount"
+        ).textContent =
+            "0";
+
+
+        document.getElementById(
+            "columnCount"
+        ).textContent =
+            "0";
+
+
+        document.getElementById(
+            "state"
+        ).textContent =
+            "Waiting";
+
+
+        showStatus("","");
+
+    }
+);
+
+
+/* =====================================================
+   IMPORTANT:
+   NORMALIZE HEADER
+===================================================== */
+
+function normalizeHeader(value){
+
+    return String(value ?? "")
+        .replace(/\u00A0/g," ")
+        .replace(/\s+/g," ")
+        .trim()
+        .toLowerCase();
+
+}
+
+
+/* =====================================================
+   CLEAN DISPLAY HEADER
+===================================================== */
+
+function cleanHeader(value){
+
+    return String(value ?? "")
+        .replace(/\u00A0/g," ")
+        .replace(/\s+/g," ")
+        .trim();
+
+}
+
+
+/* =====================================================
+   COMBINE BUTTON
+===================================================== */
+
+combineBtn.addEventListener(
+    "click",
+    combineFiles
+);
+
+
+/* =====================================================
+   MAIN COMBINE FUNCTION
+===================================================== */
+
+async function combineFiles(){
+
+    if(
+        state.processing ||
+        !state.files.length
+    ){
+        return;
+    }
+
+
+    state.processing = true;
+
+    combineBtn.disabled = true;
+
+
+    state.headers = [];
+    state.rows = [];
+
+
+    document.getElementById(
+        "progressCard"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "previewCard"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "state"
+    ).textContent =
+        "Processing";
+
+
+    try{
+
+        /*
+         * Verify library.
+         */
+        if(
+            typeof XLSX === "undefined"
+        ){
+
+            throw new Error(
+                "Excel library did not load. Please check your internet connection, then reload this HTML."
+            );
+
+        }
+
+
+        const matchHeaders =
+            document.getElementById(
+                "matchHeaders"
+            ).checked;
+
+
+        const addSource =
+            document.getElementById(
+                "addSource"
+            ).checked;
+
+
+        const removeBlank =
+            document.getElementById(
+                "removeBlank"
+            ).checked;
+
+
+        /*
+         * -------------------------------------------------
+         * FIRST PASS
+         *
+         * Discover unique headers.
+         *
+         * We use a Map where:
+         *
+         * normalized "order"
+         *
+         * becomes one column.
+         * -------------------------------------------------
+         */
+
+        const headerMap =
+            new Map();
+
+
+        let maxColumns = 0;
+
+
+        for(
+            let i = 0;
+            i < state.files.length;
+            i++
+        ){
+
+            const file =
+                state.files[i];
+
+
+            setProgress(
+                i,
+                state.files.length * 2,
+                "Reading headers",
+                file.name
+            );
+
+
+            const data =
+                await readFirstSheet(
+                    file
+                );
+
+
+            if(!data.length){
+                continue;
+            }
+
+
+            const firstRow =
+                data[0] || [];
+
+
+            if(matchHeaders){
+
+                for(
+                    let c = 0;
+                    c < firstRow.length;
+                    c++
+                ){
+
+                    const display =
+                        cleanHeader(
+                            firstRow[c]
+                        );
+
+
+                    if(!display){
+                        continue;
+                    }
+
+
+                    const key =
+                        normalizeHeader(
+                            display
+                        );
+
+
+                    /*
+                     * THIS PREVENTS:
+                     *
+                     * Order
+                     * Order 2
+                     * Order 3
+                     *
+                     * across different files.
+                     */
+                    if(
+                        !headerMap.has(key)
+                    ){
+
+                        headerMap.set(
+                            key,
+                            display
+                        );
+
+                    }
+
+                }
+
+            }
+            else{
+
+                maxColumns =
+                    Math.max(
+                        maxColumns,
+                        firstRow.length
+                    );
+
+            }
+
+
+            /*
+             * Release parsed data.
+             */
+            data.length = 0;
+
+
+            await pause();
+
+        }
+
+
+        if(matchHeaders){
+
+            state.headers =
+                Array.from(
+                    headerMap.values()
+                );
+
+        }
+        else{
+
+            state.headers =
+                Array.from(
+                    {length:maxColumns},
+                    (_,i) =>
+                        "Column " +
+                        (i + 1)
+                );
+
+        }
+
+
+        /*
+         * Source File goes at the END.
+         */
+        if(addSource){
+
+            const sourceKey =
+                normalizeHeader(
+                    "Source File"
+                );
+
+
+            if(
+                !state.headers.some(
+                    h =>
+                        normalizeHeader(h) ===
+                        sourceKey
+                )
+            ){
+
+                state.headers.push(
+                    "Source File"
+                );
+
+            }
+
+        }
+
+
+        /*
+         * -------------------------------------------------
+         * SECOND PASS
+         *
+         * Actually combine rows.
+         * -------------------------------------------------
+         */
+
+        for(
+            let fileIndex = 0;
+            fileIndex < state.files.length;
+            fileIndex++
+        ){
+
+            const file =
+                state.files[fileIndex];
+
+
+            setProgress(
+                state.files.length +
+                fileIndex,
+                state.files.length * 2,
+                "Combining file",
+                file.name
+            );
+
+
+            const data =
+                await readFirstSheet(
+                    file
+                );
+
+
+            if(!data.length){
+                continue;
+            }
+
+
+            /*
+             * Local header lookup for this file.
+             */
+            const localMap =
+                new Map();
+
+
+            if(matchHeaders){
+
+                const localHeaders =
+                    data[0] || [];
+
+
+                for(
+                    let c = 0;
+                    c < localHeaders.length;
+                    c++
+                ){
+
+                    const key =
+                        normalizeHeader(
+                            localHeaders[c]
+                        );
+
+
+                    /*
+                     * If a single file itself contains
+                     * duplicate headers, use the first one.
+                     */
+                    if(
+                        key &&
+                        !localMap.has(key)
+                    ){
+
+                        localMap.set(
+                            key,
+                            c
+                        );
+
+                    }
+
+                }
+
+            }
+
+
+            const firstDataRow =
+                matchHeaders
+                    ? 1
+                    : 0;
+
+
+            for(
+                let r = firstDataRow;
+                r < data.length;
+                r++
+            ){
+
+                const sourceRow =
+                    data[r];
+
+
+                if(!sourceRow){
+                    continue;
+                }
+
+
+                if(
+                    removeBlank &&
+                    isBlank(sourceRow)
+                ){
+                    continue;
+                }
+
+
+                const output =
+                    new Array(
+                        state.headers.length
+                    );
+
+
+                for(
+                    let c = 0;
+                    c < state.headers.length;
+                    c++
+                ){
+
+                    const header =
+                        state.headers[c];
+
+
+                    /*
+                     * SOURCE FILE
+                     */
+                    if(
+                        addSource &&
+                        normalizeHeader(header) ===
+                        normalizeHeader("Source File")
+                    ){
+
+                        output[c] =
+                            file.name;
+
+                        continue;
+
+                    }
+
+
+                    /*
+                     * HEADER MATCH MODE
+                     */
+                    if(matchHeaders){
+
+                        const key =
+                            normalizeHeader(
+                                header
+                            );
+
+
+                        const sourceIndex =
+                            localMap.get(key);
+
+
+                        if(
+                            sourceIndex !== undefined
+                        ){
+
+                            output[c] =
+                                sourceRow[
+                                    sourceIndex
+                                ] ?? "";
+
+                        }
+                        else{
+
+                            output[c] =
+                                "";
+
+                        }
+
+                    }
+
+                    /*
+                     * POSITION MODE
+                     */
+                    else{
+
+                        output[c] =
+                            sourceRow[c] ?? "";
+
+                    }
+
+                }
+
+
+                state.rows.push(
+                    output
+                );
+
+
+                /*
+                 * Keep UI responsive.
+                 */
+                if(
+                    state.rows.length % 2500 === 0
+                ){
+
+                    updateCounters();
+
+                    setProgress(
+                        state.files.length +
+                        fileIndex +
+                        r /
+                        Math.max(
+                            data.length,
+                            1
+                        ),
+                        state.files.length * 2,
+                        "Combining rows",
+                        state.rows.length.toLocaleString() +
+                        " rows collected"
+                    );
+
+
+                    await pause();
+
+                }
+
+            }
+
+
+            /*
+             * Release current file.
+             */
+            data.length = 0;
+
+
+            updateCounters();
+
+            await pause();
+
+        }
+
+
+        /*
+         * Preview only first 50 rows.
+         */
+        renderPreview();
+
+
+        setProgress(
+            100,
+            100,
+            "Combination complete",
+            state.rows.length.toLocaleString() +
+            " rows ready"
+        );
+
+
+        document.getElementById(
+            "state"
+        ).textContent =
+            "Ready";
+
+
+        showStatus(
+            "Successfully combined " +
+            state.rows.length.toLocaleString() +
+            " rows from " +
+            state.files.length +
+            " files. Click Download Excel.",
+            "success"
+        );
+
+
+        /*
+         * Automatically download after
+         * successful processing.
+         */
+        await createExcelDownload();
+
+    }
+    catch(error){
+
+        console.error(
+            "Excel Combiner Error:",
+            error
+        );
+
+
+        document.getElementById(
+            "state"
+        ).textContent =
+            "Error";
+
+
+        showStatus(
+            "ERROR: " +
+            error.message +
+            " Please check the browser console if you need technical details.",
+            "error"
+        );
+
+    }
+    finally{
+
+        state.processing =
+            false;
+
+        combineBtn.disabled =
+            state.files.length === 0;
+
+    }
+
+}
+
+
+/* =====================================================
+   READ FIRST SHEET
+===================================================== */
+
+async function readFirstSheet(file){
+
+    const buffer =
+        await file.arrayBuffer();
+
+
+    /*
+     * dense:true is important for large worksheets.
+     */
+    const workbook =
+        XLSX.read(
+            buffer,
+            {
+                type:"array",
+                dense:true,
+                cellDates:false,
+                cellNF:false,
+                cellHTML:false,
+                raw:false
+            }
+        );
+
+
+    if(
+        !workbook.SheetNames ||
+        !workbook.SheetNames.length
+    ){
+
+        return [];
+
+    }
+
+
+    const sheet =
+        workbook.Sheets[
+            workbook.SheetNames[0]
+        ];
+
+
+    if(!sheet){
+        return [];
+    }
+
+
+    return XLSX.utils.sheet_to_json(
+        sheet,
+        {
+            header:1,
+            defval:"",
+            blankrows:true,
+            raw:false
+        }
+    );
+
+}
+
+
+/* =====================================================
+   CREATE EXCEL
+===================================================== */
+
+async function createExcelDownload(){
+
+    if(!state.rows.length){
+        return;
+    }
+
+
+    setProgress(
+        99,
+        100,
+        "Creating Excel file",
+        "Building " +
+        state.rows.length.toLocaleString() +
+        " rows"
+    );
+
+
+    await pause();
+
+
+    /*
+     * Do not create unnecessary copies
+     * of the entire dataset.
+     */
+    const output = [
+        state.headers,
+        ...state.rows
+    ];
+
+
+    const worksheet =
+        XLSX.utils.aoa_to_sheet(
+            output,
+            {
+                dense:true
+            }
+        );
+
+
+    /*
+     * Freeze top row.
+     */
+    worksheet["!freeze"] = {
+        xSplit:0,
+        ySplit:1
+    };
+
+
+    /*
+     * Reasonable column widths.
+     */
+    worksheet["!cols"] =
+        state.headers.map(
+            header => ({
+                wch:
+                    Math.min(
+                        Math.max(
+                            String(header).length + 3,
+                            12
+                        ),
+                        35
+                    )
+            })
+        );
+
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Combined Data"
+    );
+
+
+    await pause();
+
+
+    const date =
+        new Date()
+            .toISOString()
+            .slice(0,10);
+
+
+    const filename =
+        "Combined_Excel_" +
+        date +
+        ".xlsx";
+
+
+    /*
+     * Browser download.
+     *
+     * compression reduces output size but
+     * requires additional processing time.
+     */
+    XLSX.writeFile(
+        workbook,
+        filename,
+        {
+            bookType:"xlsx",
+            compression:true
+        }
+    );
+
+
+    setProgress(
+        100,
+        100,
+        "Download complete",
+        filename
+    );
+
+
+    showStatus(
+        "Done! Your combined Excel file was downloaded as " +
+        filename,
+        "success"
+    );
+
+}
+
+
+/* =====================================================
+   PREVIEW
+===================================================== */
+
+function renderPreview(){
+
+    const card =
+        document.getElementById(
+            "previewCard"
+        );
+
+    const preview =
+        document.getElementById(
+            "preview"
+        );
+
+
+    if(!state.rows.length){
+
+        card.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    card.style.display =
+        "block";
+
+
+    const rows =
+        state.rows.slice(
+            0,
+            50
+        );
+
+
+    let html =
+        "<table><thead><tr>";
+
+
+    for(
+        const header of state.headers
+    ){
+
+        html +=
+            "<th>" +
+            escapeHTML(header) +
+            "</th>";
+
+    }
+
+
+    html +=
+        "</tr></thead><tbody>";
+
+
+    for(
+        const row of rows
+    ){
+
+        html += "<tr>";
+
+
+        for(
+            let i = 0;
+            i < state.headers.length;
+            i++
+        ){
+
+            html +=
+                "<td>" +
+                escapeHTML(
+                    row[i]
+                ) +
+                "</td>";
+
+        }
+
+
+        html += "</tr>";
+
+    }
+
+
+    html +=
+        "</tbody></table>";
+
+
+    preview.innerHTML =
+        html;
+
+
+    preview.style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+function setProgress(
+    current,
+    total,
+    text,
+    detail
+){
+
+    const percent =
+        total
+            ? Math.max(
+                0,
+                Math.min(
+                    100,
+                    Math.round(
+                        current /
+                        total *
+                        100
+                    )
+                )
+              )
+            : 0;
+
+
+    document.getElementById(
+        "progressText"
+    ).textContent =
+        text;
+
+
+    document.getElementById(
+        "progressPercent"
+    ).textContent =
+        percent + "%";
+
+
+    document.getElementById(
+        "progressBar"
+    ).style.width =
+        percent + "%";
+
+
+    document.getElementById(
+        "progressDetail"
+    ).textContent =
+        detail || "";
+
+}
+
+
+/* =====================================================
+   COUNTERS
+===================================================== */
+
+function updateCounters(){
+
+    document.getElementById(
+        "rowCount"
+    ).textContent =
+        state.rows.length.toLocaleString();
+
+
+    document.getElementById(
+        "columnCount"
+    ).textContent =
+        state.headers.length.toLocaleString();
+
+}
+
+
+/* =====================================================
+   BLANK ROW
+===================================================== */
+
+function isBlank(row){
+
+    for(
+        const value of row
+    ){
+
+        if(
+            String(
+                value ?? ""
+            ).trim() !== ""
+        ){
+
+            return false;
+
+        }
+
+    }
+
+    return true;
+
+}
+
+
+/* =====================================================
+   PAUSE
+===================================================== */
+
+function pause(){
+
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                0
+            )
+    );
+
+}
+
+
+/* =====================================================
+   FILE SIZE
+===================================================== */
+
+function formatBytes(bytes){
+
+    if(bytes < 1024){
+
+        return bytes + " B";
+
+    }
+
+
+    if(bytes < 1024 * 1024){
+
+        return (
+            bytes / 1024
+        ).toFixed(1) + " KB";
+
+    }
+
+
+    if(bytes < 1024 * 1024 * 1024){
+
+        return (
+            bytes /
+            1024 /
+            1024
+        ).toFixed(1) + " MB";
+
+    }
+
+
+    return (
+        bytes /
+        1024 /
+        1024 /
+        1024
+    ).toFixed(2) + " GB";
+
+}
+
+
+/* =====================================================
+   HTML ESCAPE
+===================================================== */
+
+function escapeHTML(value){
+
+    return String(
+        value ?? ""
+    ).replace(
+        /[&<>"']/g,
+        character => ({
+            "&":"&amp;",
+            "<":"&lt;",
+            ">":"&gt;",
+            '"':"&quot;",
+            "'":"&#39;"
+        })[character]
+    );
+
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function showStatus(
+    message,
+    type
+){
+
+    if(!message){
+
+        statusBox.className =
+            "status";
+
+        statusBox.textContent =
+            "";
+
+        return;
+
+    }
+
+
+    statusBox.className =
+        "status show " +
+        type;
+
+
+    statusBox.textContent =
+        message;
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF & Image to Excel Converter</title>
+
+  <!-- SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --text: #172033;
+      --muted: #64748b;
+      --border: #dbe2ea;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --soft-blue: #eff6ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #eaf2ff 0, transparent 35%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .container {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 48px 0 28px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 16px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      color: white;
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      box-shadow: 0 12px 30px rgba(37, 99, 235, .22);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 46px);
+      letter-spacing: -1.5px;
+    }
+
+    .subtitle {
+      max-width: 650px;
+      margin: 12px auto 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    .app-card {
+      background: var(--card);
+      border: 1px solid rgba(219, 226, 234, .9);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, .08);
+      overflow: hidden;
+    }
+
+    .drop-zone {
+      margin: 28px;
+      min-height: 300px;
+      padding: 48px 24px;
+      border: 2px dashed #b8c7da;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #fbfdff, #f5f9ff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.dragover {
+      border-color: var(--primary);
+      background: var(--soft-blue);
+      transform: translateY(-1px);
+    }
+
+    .upload-icon {
+      width: 74px;
+      height: 74px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      background: #dbeafe;
+      color: var(--primary);
+      font-size: 34px;
+      margin-bottom: 18px;
+    }
+
+    .drop-zone h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .drop-zone p {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+
+    .browse-btn,
+    .primary-btn,
+    .secondary-btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .browse-btn,
+    .primary-btn {
+      color: white;
+      background: var(--primary);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, .2);
+    }
+
+    .browse-btn:hover,
+    .primary-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .secondary-btn {
+      color: var(--text);
+      background: #eef2f7;
+    }
+
+    .secondary-btn:hover {
+      background: #e2e8f0;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .formats {
+      margin-top: 18px;
+      color: #8a98aa;
+      font-size: 13px;
+    }
+
+    .workspace {
+      display: none;
+      padding: 0 28px 28px;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 18px;
+    }
+
+    .file-icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: #dbeafe;
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .file-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-name {
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .file-size {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .remove-btn {
+      border: 0;
+      background: transparent;
+      color: var(--danger);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .preview {
+      display: none;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 18px;
+      background: #fafcff;
+    }
+
+    .preview h3 {
+      margin: 0 0 12px;
+      font-size: 15px;
+    }
+
+    .preview img {
+      display: block;
+      max-width: 100%;
+      max-height: 420px;
+      margin: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      display: none;
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .status.info {
+      display: block;
+      color: #1e40af;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .status.success {
+      display: block;
+      color: #166534;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+    }
+
+    .status.error {
+      display: block;
+      color: #991b1b;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+    }
+
+    .progress {
+      display: none;
+      height: 8px;
+      margin-top: 14px;
+      border-radius: 20px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+      transition: width .25s ease;
+    }
+
+    .results {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .results-header h3 {
+      margin: 0;
+    }
+
+    .table-wrap {
+      max-height: 430px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 11px 13px;
+      border-bottom: 1px solid #edf1f5;
+      border-right: 1px solid #edf1f5;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #f1f5f9;
+      font-weight: 800;
+    }
+
+    .empty {
+      padding: 30px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .tips {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 28px 0 40px;
+    }
+
+    .tip {
+      padding: 18px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .tip strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .tip span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    footer {
+      padding: 0 0 40px;
+      text-align: center;
+      color: #8a98aa;
+      font-size: 13px;
+    }
+
+    @media (max-width: 700px) {
+      .drop-zone {
+        margin: 16px;
+      }
+
+      .workspace {
+        padding: 0 16px 18px;
+      }
+
+      .tips {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .controls button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <header>
+      <div class="logo">⇩</div>
+      <h1>PDF & Image to Excel</h1>
+      <p class="subtitle">
+        Upload a PDF, JPG, JPEG, or PNG file and extract its table data
+        into a downloadable Excel spreadsheet.
+      </p>
+    </header>
+
+    <main class="app-card">
+
+      <div
+        class="drop-zone"
+        id="dropZone"
+        role="button"
+        tabindex="0"
+        aria-label="Upload file"
+      >
+        <div class="upload-icon">↑</div>
+
+        <h2>Drop your file here</h2>
+        <p>or click below to browse from your device</p>
+
+        <button class="browse-btn" type="button" id="browseBtn">
+          Choose File
+        </button>
+
+        <div class="formats">
+          Supported: PDF, JPG, JPEG, PNG
+        </div>
+
+        <input
+          type="file"
+          id="fileInput"
+          accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+        />
+      </div>
+
+      <section class="workspace" id="workspace">
+
+        <div class="file-info">
+          <div class="file-icon" id="fileIcon">PDF</div>
+
+          <div class="file-details">
+            <div class="file-name" id="fileName"></div>
+            <div class="file-size" id="fileSize"></div>
+          </div>
+
+          <button class="remove-btn" id="removeBtn" type="button">
+            Remove
+          </button>
+        </div>
+
+        <div class="preview" id="preview">
+          <h3>File Preview</h3>
+          <img id="previewImage" alt="Uploaded image preview" />
+        </div>
+
+        <div class="controls">
+          <button class="primary-btn" id="convertBtn" type="button">
+            Convert to Excel
+          </button>
+
+          <button class="secondary-btn" id="newFileBtn" type="button">
+            Choose Another File
+          </button>
+        </div>
+
+        <div class="progress" id="progress">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <section class="results" id="results">
+          <div class="results-header">
+            <h3>Extracted Data</h3>
+
+            <button class="primary-btn" id="downloadBtn" type="button">
+              Download Excel
+            </button>
+          </div>
+
+          <div class="table-wrap" id="tableWrap">
+            <div class="empty">
+              No extracted data yet.
+            </div>
+          </div>
+        </section>
+
+      </section>
+    </main>
+
+    <section class="tips">
+      <div class="tip">
+        <strong>🔒 Private</strong>
+        <span>
+          Processing is performed in your browser whenever possible.
+        </span>
+      </div>
+
+      <div class="tip">
+        <strong>⚡ Fast</strong>
+        <span>
+          Drag and drop your document and convert it with one click.
+        </span>
+      </div>
+
+      <div class="tip">
+        <strong>📊 Excel Ready</strong>
+        <span>
+          Download extracted rows and columns as an .xlsx spreadsheet.
+        </span>
+      </div>
+    </section>
+
+    <footer>
+      PDF & Image to Excel Converter
+    </footer>
+  </div>
+
+  <script type="module">
+    import * as pdfjsLib from
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs";
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
+
+    const dropZone = document.getElementById("dropZone");
+    const browseBtn = document.getElementById("browseBtn");
+    const fileInput = document.getElementById("fileInput");
+
+    const workspace = document.getElementById("workspace");
+    const fileName = document.getElementById("fileName");
+    const fileSize = document.getElementById("fileSize");
+    const fileIcon = document.getElementById("fileIcon");
+
+    const preview = document.getElementById("preview");
+    const previewImage = document.getElementById("previewImage");
+
+    const convertBtn = document.getElementById("convertBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const removeBtn = document.getElementById("removeBtn");
+    const newFileBtn = document.getElementById("newFileBtn");
+
+    const status = document.getElementById("status");
+    const progress = document.getElementById("progress");
+    const progressBar = document.getElementById("progressBar");
+
+    const results = document.getElementById("results");
+    const tableWrap = document.getElementById("tableWrap");
+
+    let selectedFile = null;
+    let extractedRows = [];
+    let outputWorkbook = null;
+
+    browseBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      fileInput.click();
+    });
+
+    dropZone.addEventListener("click", () => {
+      fileInput.click();
+    });
+
+    dropZone.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        fileInput.click();
+      }
+    });
+
+    fileInput.addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+
+      if (file) {
+        loadFile(file);
+      }
+    });
+
+    ["dragenter", "dragover"].forEach(eventName => {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+    });
+
+    ["dragleave", "drop"].forEach(eventName => {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropZone.classList.remove("dragover");
+      });
+    });
+
+    dropZone.addEventListener("drop", (event) => {
+      const file = event.dataTransfer.files?.[0];
+
+      if (file) {
+        loadFile(file);
+      }
+    });
+
+    removeBtn.addEventListener("click", resetApp);
+    newFileBtn.addEventListener("click", () => fileInput.click());
+
+    convertBtn.addEventListener("click", convertFile);
+    downloadBtn.addEventListener("click", downloadExcel);
+
+    function loadFile(file) {
+      const allowedTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/png"
+      ];
+
+      const extension = file.name.split(".").pop().toLowerCase();
+
+      if (
+        !allowedTypes.includes(file.type) &&
+        !["pdf", "jpg", "jpeg", "png"].includes(extension)
+      ) {
+        showStatus(
+          "Please select a PDF, JPG, JPEG, or PNG file.",
+          "error"
+        );
+
+        return;
+      }
+
+      selectedFile = file;
+
+      fileName.textContent = file.name;
+      fileSize.textContent = formatFileSize(file.size);
+
+      const isPdf =
+        file.type === "application/pdf" ||
+        extension === "pdf";
+
+      fileIcon.textContent = isPdf ? "PDF" : "IMG";
+
+      workspace.style.display = "block";
+      results.style.display = "none";
+
+      extractedRows = [];
+      outputWorkbook = null;
+
+      status.style.display = "none";
+      progress.style.display = "none";
+      progressBar.style.width = "0%";
+
+      if (!isPdf) {
+        const imageUrl = URL.createObjectURL(file);
+
+        previewImage.src = imageUrl;
+        preview.style.display = "block";
+      } else {
+        preview.style.display = "none";
+      }
+
+      showStatus(
+        "File ready. Click “Convert to Excel” to begin.",
+        "info"
+      );
+    }
+
+    async function convertFile() {
+      if (!selectedFile) {
+        showStatus("Please choose a file first.", "error");
+        return;
+      }
+
+      convertBtn.disabled = true;
+      convertBtn.textContent = "Converting...";
+      progress.style.display = "block";
+      setProgress(10);
+
+      try {
+        const extension =
+          selectedFile.name.split(".").pop().toLowerCase();
+
+        let rows = [];
+
+        if (extension === "pdf") {
+          rows = await extractPdfData(selectedFile);
+        } else {
+          rows = await extractImageData(selectedFile);
+        }
+
+        setProgress(90);
+
+        if (!rows.length) {
+          throw new Error(
+            "No table data could be detected. For scanned documents or photographs, OCR is required."
+          );
+        }
+
+        extractedRows = normalizeRows(rows);
+
+        outputWorkbook = XLSX.utils.book_new();
+
+        const worksheet =
+          XLSX.utils.aoa_to_sheet(extractedRows);
+
+        worksheet["!cols"] = getColumnWidths(extractedRows);
+
+        XLSX.utils.book_append_sheet(
+          outputWorkbook,
+          worksheet,
+          "Extracted Data"
+        );
+
+        renderTable(extractedRows);
+
+        results.style.display = "block";
+
+        setProgress(100);
+
+        showStatus(
+          `Successfully extracted ${Math.max(
+            extractedRows.length - 1,
+            0
+          )} data row(s). Your Excel file is ready.`,
+          "success"
+        );
+
+      } catch (error) {
+        console.error(error);
+
+        showStatus(
+          error.message ||
+          "Something went wrong while converting the file.",
+          "error"
+        );
+      } finally {
+        convertBtn.disabled = false;
+        convertBtn.textContent = "Convert to Excel";
+
+        setTimeout(() => {
+          progress.style.display = "none";
+        }, 700);
+      }
+    }
+
+    async function extractPdfData(file) {
+      setProgress(25);
+
+      const buffer = await file.arrayBuffer();
+
+      const pdf = await pdfjsLib.getDocument({
+        data: buffer
+      }).promise;
+
+      const rows = [];
+
+      for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+        const page = await pdf.getPage(pageNumber);
+
+        const content = await page.getTextContent();
+
+        const items = content.items
+          .filter(item => item.str && item.str.trim())
+          .map(item => ({
+            text: item.str.trim(),
+            x: item.transform[4],
+            y: item.transform[5]
+          }));
+
+        const pageRows = groupTextIntoRows(items);
+
+        rows.push(...pageRows);
+
+        setProgress(
+          25 +
+          Math.round(
+            (pageNumber / pdf.numPages) * 55
+          )
+        );
+      }
+
+      return rows;
+    }
+
+    function groupTextIntoRows(items) {
+      if (!items.length) {
+        return [];
+      }
+
+      const tolerance = 5;
+
+      items.sort((a, b) => {
+        if (Math.abs(a.y - b.y) <= tolerance) {
+          return a.x - b.x;
+        }
+
+        return b.y - a.y;
+      });
+
+      const grouped = [];
+
+      for (const item of items) {
+        let row = grouped.find(
+          r => Math.abs(r.y - item.y) <= tolerance
+        );
+
+        if (!row) {
+          row = {
+            y: item.y,
+            cells: []
+          };
+
+          grouped.push(row);
+        }
+
+        row.cells.push(item);
+      }
+
+      grouped.sort((a, b) => b.y - a.y);
+
+      return grouped.map(row =>
+        row.cells
+          .sort((a, b) => a.x - b.x)
+          .map(cell => cell.text)
+      );
+    }
+
+    async function extractImageData(file) {
+      /*
+       * Browser-only image table extraction needs OCR.
+       *
+       * This implementation first checks whether the browser has
+       * access to OCR.js. If not, it gives the user a clear message.
+       *
+       * To productionize image OCR, integrate Tesseract.js or
+       * your preferred OCR API here.
+       */
+
+      setProgress(30);
+
+      if (typeof Tesseract === "undefined") {
+        throw new Error(
+          "Image OCR is not enabled in this standalone version. PDF text extraction works directly. To extract tables from JPG/PNG scans, connect an OCR engine such as Tesseract.js or a server-side OCR service."
+        );
+      }
+
+      setProgress(45);
+
+      const result = await Tesseract.recognize(
+        file,
+        "eng",
+        {
+          logger: message => {
+            if (message.progress) {
+              setProgress(
+                45 +
+                Math.round(message.progress * 40)
+              );
+            }
+          }
+        }
+      );
+
+      return ocrTextToRows(result.data.text);
+    }
+
+    function ocrTextToRows(text) {
+      return text
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          /*
+           * Try common table separators first.
+           */
+          if (line.includes("\t")) {
+            return line.split("\t").map(v => v.trim());
+          }
+
+          if (line.includes("|")) {
+            return line
+              .split("|")
+              .map(v => v.trim())
+              .filter(Boolean);
+          }
+
+          /*
+           * Fall back to multiple spaces.
+           */
+          return line
+            .split(/\s{2,}/)
+            .map(v => v.trim())
+            .filter(Boolean);
+        });
+    }
+
+    function normalizeRows(rows) {
+      if (!rows.length) {
+        return [];
+      }
+
+      const maxColumns = Math.max(
+        ...rows.map(row => row.length)
+      );
+
+      const normalized = rows.map(row => {
+        const result = [...row];
+
+        while (result.length < maxColumns) {
+          result.push("");
+        }
+
+        return result;
+      });
+
+      /*
+       * If the document does not contain a clear header,
+       * create generic Excel-friendly headers.
+       */
+      if (
+        normalized.length &&
+        normalized[0].every(cell => !String(cell).trim())
+      ) {
+        normalized.shift();
+      }
+
+      if (normalized.length) {
+        const firstRow = normalized[0];
+
+        const hasUsefulHeader =
+          firstRow.some(
+            cell =>
+              String(cell).trim().length > 0
+          );
+
+        if (!hasUsefulHeader) {
+          normalized.unshift(
+            Array.from(
+              { length: maxColumns },
+              (_, index) => `Column ${index + 1}`
+            )
+          );
+        }
+      }
+
+      return normalized;
+    }
+
+    function renderTable(rows) {
+      if (!rows.length) {
+        tableWrap.innerHTML =
+          '<div class="empty">No extracted data.</div>';
+
+        return;
+      }
+
+      const table = document.createElement("table");
+
+      const header = document.createElement("thead");
+      const headerRow = document.createElement("tr");
+
+      rows[0].forEach(cell => {
+        const th = document.createElement("th");
+        th.textContent = cell;
+        headerRow.appendChild(th);
+      });
+
+      header.appendChild(headerRow);
+      table.appendChild(header);
+
+      const tbody = document.createElement("tbody");
+
+      rows.slice(1).forEach(row => {
+        const tr = document.createElement("tr");
+
+        row.forEach(cell => {
+          const td = document.createElement("td");
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+
+      tableWrap.innerHTML = "";
+      tableWrap.appendChild(table);
+    }
+
+    function downloadExcel() {
+      if (!outputWorkbook) {
+        showStatus(
+          "There is no converted Excel file yet.",
+          "error"
+        );
+
+        return;
+      }
+
+      const originalName =
+        selectedFile?.name
+          ?.replace(/\.[^/.]+$/, "") ||
+        "converted-file";
+
+      const fileName =
+        `${originalName}-converted.xlsx`;
+
+      XLSX.writeFile(
+        outputWorkbook,
+        fileName
+      );
+    }
+
+    function getColumnWidths(rows) {
+      if (!rows.length) {
+        return [];
+      }
+
+      const columnCount = Math.max(
+        ...rows.map(row => row.length)
+      );
+
+      return Array.from(
+        { length: columnCount },
+        (_, columnIndex) => {
+          const maxLength = Math.max(
+            ...rows.map(row =>
+              String(row[columnIndex] || "").length
+            )
+          );
+
+          return {
+            wch: Math.min(
+              Math.max(maxLength + 2, 12),
+              40
+            )
+          };
+        }
+      );
+    }
+
+    function setProgress(value) {
+      progressBar.style.width =
+        `${Math.min(100, Math.max(0, value))}%`;
+    }
+
+    function showStatus(message, type) {
+      status.textContent = message;
+      status.className = `status ${type}`;
+    }
+
+    function formatFileSize(bytes) {
+      if (!bytes) {
+        return "0 Bytes";
+      }
+
+      const units = [
+        "Bytes",
+        "KB",
+        "MB",
+        "GB"
+      ];
+
+      const index =
+        Math.floor(
+          Math.log(bytes) /
+          Math.log(1024)
+        );
+
+      return `${(
+        bytes /
+        Math.pow(1024, index)
+      ).toFixed(1)} ${units[index]}`;
+    }
+
+    function resetApp() {
+      selectedFile = null;
+      extractedRows = [];
+      outputWorkbook = null;
+
+      fileInput.value = "";
+
+      workspace.style.display = "none";
+      preview.style.display = "none";
+      results.style.display = "none";
+
+      status.style.display = "none";
+      progress.style.display = "none";
+
+      progressBar.style.width = "0%";
+
+      tableWrap.innerHTML =
+        '<div class="empty">No extracted data yet.</div>';
+
+      previewImage.src = "";
+    }
+  </script>
+
+  <!-- Optional OCR library for JPG/PNG -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+  </script>
+</body>
+</html>
