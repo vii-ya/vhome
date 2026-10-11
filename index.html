@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IVY · Future Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased} :root{--aqua:#0abab5;--bg:#0a0a0a;--muted:#888;--border:rgba(255,255,255,.12)}
+body{min-height:100vh;font-family:Inter,-apple-system,sans-serif;background:var(--bg);color:#f5f5f5;overflow-x:hidden;position:relative;display:flex;flex-direction:column}
+#bg-layer{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}#bg-layer img,#bg-layer video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35;filter:blur(2px) brightness(.7)}#bg-layer iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100vh;min-width:100vw;min-height:56.25vw;transform:translate(-50%,-50%);opacity:.3;pointer-events:none;border:0}
+#cursor-glow{position:fixed;width:640px;height:640px;border-radius:50%;pointer-events:none;z-index:2;transform:translate(-50%,-50%);mix-blend-mode:screen;will-change:transform;opacity:.9;filter:blur(2px)}body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.022;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.top{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.76);backdrop-filter:blur(20px);border-bottom:1px solid rgba(10,186,181,.12)}.top-inner{width:min(1200px,calc(100% - 40px));margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:68px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff;flex-shrink:0}.brand-mark{width:30px;height:30px;border:1.5px solid #fff;border-radius:50%;display:grid;place-items:center;font:500 11px 'JetBrains Mono';transition:.4s}.brand:hover .brand-mark{transform:rotate(180deg);border-color:var(--aqua)}.brand-name{font-size:15px;font-weight:700;letter-spacing:1px}.nav{display:flex;gap:4px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.nav a,.language-select{padding:9px 12px;font-size:12px;letter-spacing:.2px;color:#aaa;text-decoration:none;border-radius:8px;transition:.2s;background:transparent;border:1px solid transparent}.nav a:hover{color:#fff;background:#1a1a1a}.nav .store-link{color:#000;background:#fff;font-weight:700}.nav .store-link:hover{background:var(--aqua);color:#000}.language-select{color:#eee;background:#151515;border-color:#303030;cursor:pointer;outline:none}
+main{width:min(1120px,calc(100% - 40px));margin:auto;padding:58px 0 82px;position:relative;z-index:5;flex:1}.hero{margin-bottom:34px}.hero-label{font:500 11px 'JetBrains Mono';letter-spacing:3px;text-transform:uppercase;color:#777;margin-bottom:16px}.hero h1{font-size:clamp(38px,6.5vw,76px);font-weight:900;line-height:.98;letter-spacing:-3px;margin-bottom:18px}.hero h1 span{display:block}.hero h1 em{font-style:normal;color:#555}.hero-desc{max-width:640px;font-size:14px;line-height:1.8;color:#888}.hero-desc code{font:12px 'JetBrains Mono';color:var(--aqua);background:#1a1a1a;padding:2px 8px;border-radius:6px}
+.panel{background:rgba(15,15,15,.72);backdrop-filter:blur(12px);border:1px solid rgba(10,186,181,.2);border-radius:26px;padding:clamp(22px,4vw,38px);box-shadow:0 25px 50px -12px rgba(0,0,0,.7);position:relative;overflow:hidden}.panel:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 10%,rgba(10,186,181,.05),transparent 70%)}.panel-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:25px;position:relative;z-index:1}.panel-header h2{font-size:15px;font-weight:600;display:flex;gap:10px;align-items:center}.badge{font:10px 'JetBrains Mono';background:rgba(10,186,181,.13);color:var(--aqua);padding:4px 9px;border-radius:99px;border:1px solid rgba(10,186,181,.25)}.lock-indicator{font:11px 'JetBrains Mono';color:#777;padding:7px 11px;border:1px solid #292929;border-radius:99px}.lock-indicator.unlocked{border-color:rgba(10,186,181,.4);color:var(--aqua)}
+.password-gate{position:relative;z-index:2;display:flex;flex-direction:column;gap:14px;max-width:400px;margin:0 auto;padding:18px 0 22px}.password-gate.hidden{display:none}.password-label{font-size:13px;color:#aaa;display:flex;gap:8px;align-items:center}.password-label i{font-style:normal;color:var(--aqua)}.password-input-wrap{display:flex;gap:8px}.password-input-wrap input{min-width:0;flex:1;background:#111;border:1px solid #303030;border-radius:12px;padding:15px 17px;color:white;font:15px Inter;outline:none}.password-input-wrap input:focus{border-color:var(--aqua);box-shadow:0 0 0 3px #0abab51a}.unlock-btn{width:54px;border:0;border-radius:12px;background:var(--aqua);color:#000;font-size:22px;font-weight:700;cursor:pointer}.unlock-btn:hover{background:#3ecfc9}.error-msg{min-height:18px;color:#ff6262;font-size:12px}.password-hint{font:10px 'JetBrains Mono';color:#555}.function-area{position:relative;z-index:2;opacity:0;transform:translateY(10px);pointer-events:none;user-select:none;transition:opacity .5s,transform .5s}.function-area.unlocked{opacity:1;transform:none;pointer-events:auto;user-select:auto}.function-area.open{opacity:1;transform:none;pointer-events:auto;user-select:auto}
+.welcome{padding:8px 0 28px}.welcome .eyebrow{font:11px 'JetBrains Mono';letter-spacing:2px;color:var(--aqua);margin-bottom:12px}.welcome h2{font-size:clamp(28px,4vw,42px);line-height:1.1;margin-bottom:12px}.welcome h2 span{color:var(--aqua)}.welcome p{color:#8b95a7;line-height:1.7;max-width:700px;font-size:14px}.tools-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:12px 0 20px}.tools-head h2{font-size:21px;letter-spacing:.3px}.tools-head span{font:10px 'JetBrains Mono';letter-spacing:1px;color:#7f8a9d}.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.tool-card{position:relative;display:block;min-height:170px;padding:23px;text-decoration:none;color:#fff;background:rgba(10,20,38,.7);border:1px solid var(--border);border-radius:19px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}.tool-card:before{content:"";position:absolute;inset:0;opacity:.08;pointer-events:none;background:var(--card-color,var(--aqua))}.tool-card:hover{transform:translateY(-4px);border-color:var(--card-color,var(--aqua));box-shadow:0 12px 32px #0005}.tool-icon{font-size:27px;margin-bottom:18px}.tool-card h3{font-size:15px;line-height:1.4;margin-bottom:8px}.tool-card p{font-size:12px;line-height:1.6;color:#96a0b2}.tool-arrow{position:absolute;right:20px;top:20px;color:#778;transition:.2s}.tool-card:hover .tool-arrow{color:var(--card-color,var(--aqua));transform:translate(3px,-3px)}.search-row{display:flex;gap:10px;margin-bottom:18px}.search-row input{width:100%;background:#10131d;border:1px solid #293142;color:#fff;border-radius:12px;padding:13px 15px;outline:none;font:13px Inter}.search-row input:focus{border-color:var(--aqua)}.empty-state{display:none;color:#888;font-size:13px;padding:18px 0}.admin-note{margin-top:28px;font:10px 'JetBrains Mono';color:#555;border-top:1px solid #242424;padding-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}footer{border-top:1px solid #1a1a1a;padding:28px 20px;text-align:center;font:10px 'JetBrains Mono';letter-spacing:2px;color:#444;position:relative;z-index:5}footer span{color:var(--aqua)}
+@media(max-width:650px){.top-inner{width:calc(100% - 24px);padding:12px 0;align-items:flex-start;flex-direction:column}.nav{justify-content:flex-start}.nav a{padding:8px 9px}.language-select{padding:8px}.hero h1{letter-spacing:-1.8px}main{width:calc(100% - 24px);padding-top:38px}.tools-grid{grid-template-columns:1fr}.tool-card{min-height:145px}}
+</style>
+</head>
+<body>
+<div id="bg-layer"></div><div id="cursor-glow"></div>
+<header class="top"><div class="top-inner">
+  <a class="brand" href="index.html"><span class="brand-mark">IV</span><span class="brand-name">IVY FUTURE HUB</span></a>
+  <nav class="nav" id="mainNav" aria-label="Main navigation"></nav>
+  <select class="language-select" id="languageSelect" aria-label="Language">
+    <option value="en">🌐 English</option><option value="zh">🌐 中文</option><option value="ms">🌐 Bahasa Melayu</option>
+  </select>
+</div></header>
+<main>
+  <section class="hero"><div class="hero-label" data-i18n="eyebrow">IVY · UNIVERSAL INTERFACE</div><h1><span>One interface.</span><span><em>Any function.</em></span></h1><p class="hero-desc" data-i18n="heroDesc">Password protected · Modular · Ready to expand. Manage your navigation and tool cards in the <code>CONFIG</code> at the top of this file.</p></section>
+  <section class="panel">
+    <div class="panel-header"><h2><span data-i18n="panelTitle">Your tools</span><span class="badge" data-i18n="panelBadge">FUTURE HUB</span></h2><div class="lock-indicator" id="lockIndicator">🔒 <span data-i18n="locked">Locked</span></div></div>
+    <div class="password-gate" id="passwordGate"><div class="password-label"><i>🔑</i><span data-i18n="passwordLabel">Enter access password</span></div><div class="password-input-wrap"><input type="password" id="passwordInput" placeholder="••••••••" autocomplete="current-password" aria-label="Password"><button class="unlock-btn" id="unlockBtn" aria-label="Unlock">→</button></div><div class="error-msg" id="errorMsg" aria-live="polite"></div><div class="password-hint" data-i18n="passwordHint">Password can be changed in CONFIG · Shortcut: /</div></div>
+    <div class="function-area" id="functionArea">
+      <section class="welcome"><div class="eyebrow" data-i18n="welcomeEyebrow">YOUR DIGITAL WORKSPACE</div><h2 data-i18n="welcomeTitle">Welcome to the <span>IVY Future Hub</span></h2><p data-i18n="welcomeDesc">A modern collection of smart calculators, useful tools, calendars and interactive experiences — designed for the future.</p></section>
+      <div class="tools-head"><h2 data-i18n="toolsTitle">⚡ IVY Tools</h2><span data-i18n="quickAccess">QUICK ACCESS</span></div>
+      <div class="search-row"><input type="search" id="toolSearch" data-i18n-placeholder="searchPlaceholder" placeholder="Search tools..." autocomplete="off"></div>
+      <div class="tools-grid" id="toolsGrid"></div><div class="empty-state" id="emptyState" data-i18n="noResults">No matching tools found.</div>
+    </div>
+    <div class="admin-note"><span>🔧 IVY SHELL · <span data-i18n="configNote">Navigation and tools managed in CONFIG</span></span><span><span data-i18n="toolCountLabel">Tools</span>: <span id="toolCount">0</span></span></div>
+  </section>
+</main>
+<footer>IVY — <span>FUTURE HUB</span> · BUILT TO EXPAND</footer>
+<script>
+/* ==========================================================
+   IVY FUTURE HUB — SHELL CONFIG
+   Keep navigation and tool cards managed here.
+   Put pages in folder 1, then use paths like 1/filename.html
+   ========================================================== */
+const CONFIG = {
+  STORE_URL: "https://qqshop.byethost12.com/wp",
+  USE_PASSWORD: true,
+  PASSWORD: "ivy2026",
+  NAVIGATION: [
+    { icon: "🏠", label: "Home", href: "index.html" },
+    { icon: "🏡", label: "House", href: "1/house.html" },
+    { icon: "🚗", label: "Car", href: "1/car.html" },
+    { icon: "💰", label: "CalcHub", href: "1/calchub.html" },
+    { icon: "📅", label: "Calendar", href: "1/chinesecalendar.html" },
+    { icon: "🎮", label: "Play", href: "1/play.html" },
+    { icon: "🛒", label: "Store ↗", href: "https://qqshop.byethost12.com/wp", external: true, store: true }
+  ],
+  TOOLS: [
+    { icon: "🏡", title: "Capital & Profit Calculator", description: "Calculator", href: "1/Capital & Profit Calculator.html", color: "green" },
+    { icon: "🏡", title: "Malaysia Business Calculator Pro", description: "Calculator", href: "1/Malaysia Business Calculator Pro.html", color: "green" },
+    { icon: "🏡", title: "Profit & Loss Statement", description: "Calculator", href: "1/Profit & Loss Statement.html", color: "green" },
+    { icon: "🏡", title: "4", description: "Calculator", href: "1/4.html", color: "green" },
+    { icon: "🏡", title: "Quick Check Tax Computation", description: "Calculator", href: "1/Quick Check Tax Computation.html", color: "green" },
+    { icon: "🏡", title: "House Calculator", description: "Calculate house purchase costs and explore property financing.", href: "1/house.html", color: "green" },
+    { icon: "🚗", title: "Car Loan Calculator", description: "Calculate vehicle loan payments and financing costs.", href: "1/car.html", color: "orange" },
+    { icon: "💰", title: "CalcHub", description: "Your central hub for useful calculations and financial tools.", href: "1/calchub.html", color: "purple" },
+    { icon: "📅", title: "Chinese Calendar", description: "Explore dates and information from the Chinese calendar.", href: "1/chinesecalendar.html", color: "pink" },
+    { icon: "🎮", title: "Play", description: "Enter the interactive area and explore something fun.", href: "1/play.html", color: "blue" },
+    { icon: "🧮", title: "BMI Calculator", description: "Calculate BMI quickly and easily.", href: "1/bmi.html", color: "cyan" }
+  ],
+  GLOW: { COLOR_1: "rgba(10,186,181,.20)", COLOR_2: "rgba(0,168,150,.08)", COLOR_3: "rgba(129,216,208,.03)", SIZE: 640, SMOOTH: .13 }
+};
+
+const I18N = {
+ en:{eyebrow:"IVY · UNIVERSAL INTERFACE",heroDesc:'Password protected · Modular · Ready to expand. Manage your navigation and tool cards in the <code>CONFIG</code> at the top of this file.',panelTitle:"Your tools",panelBadge:"FUTURE HUB",locked:"Locked",unlocked:"Unlocked",openAccess:"Open access",passwordLabel:"Enter access password",passwordHint:"Password can be changed in CONFIG · Shortcut: /",welcomeEyebrow:"YOUR DIGITAL WORKSPACE",welcomeTitle:'Welcome to the <span>IVY Future Hub</span>',welcomeDesc:"A modern collection of smart calculators, useful tools, calendars and interactive experiences — designed for the future.",toolsTitle:"⚡ IVY Tools",quickAccess:"QUICK ACCESS",searchPlaceholder:"Search tools...",noResults:"No matching tools found.",configNote:"Navigation and tools managed in CONFIG",toolCountLabel:"Tools",wrongPassword:"Incorrect password. Please try again.",success:"✓ Verified. Tools unlocked.",navHome:"Home",navHouse:"House",navCar:"Car",navCalc:"CalcHub",navCalendar:"Calendar",navPlay:"Play",navStore:"Store ↗"},
+ zh:{eyebrow:"IVY · 万能界面",heroDesc:'密码保护 · 模块化 · 随时扩展。你可以在本文件顶部的 <code>CONFIG</code> 中管理导航和工具卡片。',panelTitle:"工具中心",panelBadge:"未来工具站",locked:"已锁定",unlocked:"已解锁",openAccess:"开放访问",passwordLabel:"输入访问密码",passwordHint:"可在 CONFIG 修改密码 · 快捷键：/",welcomeEyebrow:"你的数字工作空间",welcomeTitle:'欢迎来到 <span>IVY Future Hub</span>',welcomeDesc:"集合智能计算器、实用工具、日历和互动体验的现代工具站，为未来而设计。",toolsTitle:"⚡ IVY 工具",quickAccess:"快速访问",searchPlaceholder:"搜索工具...",noResults:"没有找到匹配的工具。",configNote:"在 CONFIG 中管理导航和工具",toolCountLabel:"工具数",wrongPassword:"密码错误，请重试。",success:"✓ 验证成功，工具已解锁。",navHome:"首页",navHouse:"房屋",navCar:"汽车",navCalc:"计算中心",navCalendar:"日历",navPlay:"游戏",navStore:"商店 ↗"},
+ ms:{eyebrow:"IVY · ANTARA MUKA UNIVERSAL",heroDesc:'Dilindungi kata laluan · Modular · Mudah dikembangkan. Urus navigasi dan kad alat melalui <code>CONFIG</code> di bahagian atas fail ini.',panelTitle:"Alat anda",panelBadge:"HUB MASA DEPAN",locked:"Dikunci",unlocked:"Dibuka",openAccess:"Akses terbuka",passwordLabel:"Masukkan kata laluan",passwordHint:"Kata laluan boleh diubah dalam CONFIG · Pintasan: /",welcomeEyebrow:"RUANG KERJA DIGITAL ANDA",welcomeTitle:'Selamat datang ke <span>IVY Future Hub</span>',welcomeDesc:"Himpunan kalkulator pintar, alat berguna, kalendar dan pengalaman interaktif moden — direka untuk masa depan.",toolsTitle:"⚡ Alat IVY",quickAccess:"AKSES PANTAS",searchPlaceholder:"Cari alat...",noResults:"Tiada alat yang sepadan.",configNote:"Urus navigasi dan alat dalam CONFIG",toolCountLabel:"Alat",wrongPassword:"Kata laluan salah. Sila cuba lagi.",success:"✓ Disahkan. Alat dibuka.",navHome:"Utama",navHouse:"Rumah",navCar:"Kereta",navCalc:"CalcHub",navCalendar:"Kalendar",navPlay:"Main",navStore:"Kedai ↗"}
+};
+let currentLanguage = 'en';
+function t(key){return (I18N[currentLanguage]&&I18N[currentLanguage][key])||I18N.en[key]||key;}
+function renderNavigation(){
+ const nav=document.getElementById('mainNav'); nav.innerHTML='';
+ CONFIG.NAVIGATION.forEach(item=>{const a=document.createElement('a');a.href=item.href;a.innerHTML='';a.append(document.createTextNode(item.icon+' '));
+ const labelKey={Home:'navHome',House:'navHouse',Car:'navCar',CalcHub:'navCalc',Calendar:'navCalendar',Play:'navPlay','Store ↗':'navStore'}[item.label];a.append(document.createTextNode(labelKey?t(labelKey):item.label));
+ if(item.external){a.target='_blank';a.rel='noopener noreferrer';}if(item.store)a.className='store-link';nav.appendChild(a);});
+}
+function renderTools(){
+ const grid=document.getElementById('toolsGrid');grid.innerHTML='';const q=document.getElementById('toolSearch').value.trim().toLowerCase();let count=0;
+ CONFIG.TOOLS.forEach(tool=>{const hay=[tool.title,tool.description,tool.href].join(' ').toLowerCase();if(q&&!hay.includes(q))return;count++;
+ const a=document.createElement('a');a.className='tool-card';a.href=tool.href;a.style.setProperty('--card-color',({cyan:'#00eaff',green:'#22c55e',orange:'#f59e0b',purple:'#8b5cf6',pink:'#ec4899',blue:'#06b6d4'}[tool.color]||'#0abab5'));
+ const icon=document.createElement('div');icon.className='tool-icon';icon.textContent=tool.icon;const title=document.createElement('h3');title.textContent=tool.title;const desc=document.createElement('p');desc.textContent=tool.description;const arrow=document.createElement('span');arrow.className='tool-arrow';arrow.textContent='↗';a.append(icon,title,desc,arrow);grid.appendChild(a);
+ });document.getElementById('toolCount').textContent=CONFIG.TOOLS.length;document.getElementById('emptyState').style.display=count?'none':'block';
+}
+function applyLanguage(lang){currentLanguage=I18N[lang]?lang:'en';document.documentElement.lang=currentLanguage;document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(I18N[currentLanguage][key])el.innerHTML=I18N[currentLanguage][key];});document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder);});document.getElementById('passwordInput').setAttribute('aria-label',currentLanguage==='zh'?'密码':currentLanguage==='ms'?'Kata laluan':'Password');renderNavigation();}
+document.getElementById('languageSelect').addEventListener('change',e=>applyLanguage(e.target.value));document.getElementById('toolSearch').addEventListener('input',renderTools);renderNavigation();renderTools();applyLanguage('en');
+/* Password gate — client-side convenience gate, not secure authentication. */
+(function(){const gate=document.getElementById('passwordGate'),area=document.getElementById('functionArea'),indicator=document.getElementById('lockIndicator'),input=document.getElementById('passwordInput'),btn=document.getElementById('unlockBtn'),err=document.getElementById('errorMsg');
+ function setLock(open){indicator.classList.toggle('unlocked',open);indicator.innerHTML=(open?'🔓 ':'🔒 ')+'<span>'+t(open?(CONFIG.USE_PASSWORD?'unlocked':'openAccess'):'locked')+'</span>';}
+ function unlock(){if(input.value===CONFIG.PASSWORD){err.style.color='var(--aqua)';err.textContent=t('success');gate.style.opacity='0';gate.style.transform='translateY(-8px)';setTimeout(()=>gate.classList.add('hidden'),350);area.classList.add('unlocked');setLock(true);}else{err.textContent=t('wrongPassword');input.value='';input.focus();input.animate([{transform:'translateX(0)'},{transform:'translateX(5px)'},{transform:'translateX(-5px)'},{transform:'translateX(0)'}],{duration:180});}}
+ if(!CONFIG.USE_PASSWORD){gate.classList.add('hidden');area.classList.add('open');setLock(true);}else{btn.addEventListener('click',unlock);input.addEventListener('keydown',e=>{if(e.key==='Enter')unlock();});window.addEventListener('load',()=>input.focus());window.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement!==input&& !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();input.focus();}});}
+ document.getElementById('languageSelect').addEventListener('change',()=>{if(area.classList.contains('unlocked')||area.classList.contains('open'))setLock(true);});
+})();
+/* Tiffany-blue cursor glow from the original UX/UI shell */
+(function(){const glow=document.getElementById('cursor-glow'),g=CONFIG.GLOW;glow.style.width=g.SIZE+'px';glow.style.height=g.SIZE+'px';glow.style.background='radial-gradient(circle,'+g.COLOR_1+' 0%,'+g.COLOR_2+' 30%,'+g.COLOR_3+' 55%,transparent 80%)';let tx=innerWidth/2,ty=innerHeight/2,cx=tx,cy=ty;addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;});addEventListener('mouseleave',()=>glow.style.opacity='.3');addEventListener('mouseenter',()=>glow.style.opacity='.9');(function loop(){cx+=(tx-cx)*g.SMOOTH;cy+=(ty-cy)*g.SMOOTH;glow.style.transform='translate('+cx+'px,'+cy+'px) translate(-50%,-50%)';requestAnimationFrame(loop);})();})();
+</script>
+</body></html>
